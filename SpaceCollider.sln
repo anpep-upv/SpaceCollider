@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpaceCollider", "SpaceCollider.vcxproj", "{2F6E2938-9C1F-446F-98C2-78E5B0010D72}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F6E2938-9C1F-446F-98C2-78E5B0010D72}.Debug|x86.ActiveCfg = Debug|Win32
+		{2F6E2938-9C1F-446F-98C2-78E5B0010D72}.Debug|x86.Build.0 = Debug|Win32
+		{2F6E2938-9C1F-446F-98C2-78E5B0010D72}.Release|x86.ActiveCfg = ModelTest|Win32
+		{2F6E2938-9C1F-446F-98C2-78E5B0010D72}.Release|x86.Build.0 = ModelTest|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {298E46E3-75C5-4F85-8C01-20DC69B0F425}
+	EndGlobalSection
+EndGlobal

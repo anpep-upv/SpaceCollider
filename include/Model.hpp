@@ -1,0 +1,130 @@
+// SpaceCollider -- SGI Lab Task 9
+// Copyright (c) 2021-2022 Ángel Pérez <aperpor@upv.edu.es>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+#pragma once
+
+#include <functional>
+#include <map>
+#include <MtlCollection.hpp>
+#include <string>
+#include <Vec2.hpp>
+#include <Vec3.hpp>
+#include <vector>
+#include <GL/freeglut.h>
+#include <filesystem>
+
+struct Model {
+    explicit Model(const std::string& rawPath);
+    ~Model();
+
+    void render(float scale = 1.0f) const;
+
+private:
+    /* std::vector<Vec3<float>> m_vertices;
+    std::vector<Vec3<float>> m_normals;
+    std::vector<Vec2<float>> m_textureCoordinates; */
+    std::vector<Vec3<float>> m_vertices;
+    std::vector<Vec3<float>> m_normals;
+    std::vector<Vec2<float>> m_textureCoordinates;
+
+    // Path of the parent directory containing this model file
+    // This is used to resolve absolute material library paths
+    std::filesystem::path m_parentPath;
+
+    // Material collection (if any)
+    MtlCollection* m_mtlCollection;
+    MtlCollection::Material* m_currentMaterial{ nullptr };
+
+    // Parameter setting function type alias
+    using SetParamFn = std::function<void(Model&, std::vector<std::string>)>;
+
+    // Keyword-parameter setting function mapping
+    const std::map<std::string, SetParamFn> k_keywordMap{
+        // Load material library
+        { "mtllib", [](auto& model, auto params) {
+            assert(params.size() == 1);
+            assert(model.m_mtlCollection == nullptr);
+
+            // Obtain full file path to the material library
+            const std::filesystem::path filePath{ params[0] };
+            const auto fullPath = model.m_parentPath / filePath;
+
+            // Load and parse the material library
+            model.m_mtlCollection = new MtlCollection{ fullPath.generic_string() };
+        } },
+
+        // Use material
+        { "usemtl", [](auto& model, auto params) {
+            assert(params.size() == 1);
+            assert(model.m_mtlCollection != nullptr);
+            model.m_currentMaterial = model.m_mtlCollection->getMaterialPtr(params[0]);
+        } },
+
+        // Vertex positions
+        { "v", [](auto& model, auto params) {
+            assert(params.size() == 3);
+            model.m_vertices.emplace_back(std::stof(params[0]), std::stof(params[1]), std::stof(params[2]));
+        } },
+
+        // Vertex normals
+        { "vn", [](auto& model, auto params) {
+            assert(params.size() == 3);
+            model.m_normals.emplace_back(std::stof(params[0]), std::stof(params[1]), std::stof(params[2]));
+        } },
+
+        // Texture coordinates
+        { "vt", [](auto& model, auto params) {
+            assert(params.size() == 2);
+            model.m_textureCoordinates.emplace_back(std::stof(params[0]), std::stof(params[1]));
+        } },
+
+        // Faces
+        { "f", [](auto& model, auto params) {
+            // See <https://webglfundamentals.org/webgl/lessons/webgl-load-obj.html>
+            // (1) f 1 2 3              # indices for positions only
+            // (2) f 1/1 2/2 3/3        # indices for positions and texcoords
+            // (3) f 1/1/1 2/2/2 3/3/3  # indices for positions, texcoords, and normals
+            // (4) f 1//1 2//2 3//3     # indices for positions and normals
+
+            // TODO: support for n > 3 vertices? (GL_QUADS, GL_POLYGON)
+            assert(params.size() == 3);
+            assert(model.m_currentMaterial != nullptr);
+
+            for (const auto& param : params) {
+                std::vector<std::string> indices = Util::splitString(param, '/');
+                // TODO: support for incomplete face indices (cases 1, 2, 4)
+                assert(indices.size() == 3);
+                assert(!indices[0].empty() && !indices[1].empty() && !indices[2].empty());
+                // Heads up! OBJ indices are 1-based, not 0-based like std::vector
+                const auto positionIndex = std::stoi(indices[0]) - 1,
+                           textureCoordinateIndex = std::stoi(indices[1]) - 1,
+                           normalIndex = std::stoi(indices[2]) - 1;
+
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_textureCoordinates[textureCoordinateIndex].x);
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_textureCoordinates[textureCoordinateIndex].y);
+
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_normals[normalIndex].x);
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_normals[normalIndex].y);
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_normals[normalIndex].z);
+
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_vertices[positionIndex].x);
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_vertices[positionIndex].y);
+                model.m_currentMaterial->vertexBuffer.push_back(model.m_vertices[positionIndex].z);
+            }
+        } }
+    };
+};
