@@ -24,19 +24,14 @@
 #define GL_MULTISAMPLE 0x809D
 #endif
 
-#pragma region Viewport
 static int g_viewportWidth = 1024;
 static int g_viewportHeight = 768;
-#pragma endregion
 
-#pragma region Framerate control
 static constexpr int k_maxFps = 60;
 static int g_fps = 0;
 static int g_frameCounter = 0;
 static int g_lastFrameTime = 0, g_lastFpsTime = 0;
-#pragma endregion
 
-#pragma region Scene objects
 static struct {
     bool m_initialized = false;
     Player* m_player = nullptr;
@@ -46,9 +41,7 @@ static struct {
     // Mothership model advance
     float m_mothership_advance = 0.0f;
 } g_scene;
-#pragma endregion
 
-#pragma region Framerate control
 static void updateFpsCounter()
 {
     const auto currentTime = glutGet(GLUT_ELAPSED_TIME);
@@ -62,9 +55,7 @@ static void updateFpsCounter()
         g_lastFpsTime = currentTime;
     }
 }
-#pragma endregion
 
-#pragma region GLUT event handlers
 static void onTimer(const int value)
 {
     const auto currentTime = glutGet(GLUT_ELAPSED_TIME);
@@ -148,9 +139,7 @@ static void onReshape(const int width, const int height)
     g_viewportHeight = height;
     Player::updateViewport(width, height);
 }
-#pragma endregion
 
-#pragma region Keyboard control
 static void onKeyboard(const int up, const unsigned char key, const int x, const int y)
 {
     g_scene.m_player->handleKeyboardEvent(up, key, x, y);
@@ -200,7 +189,6 @@ static void onSpecialKeyboardDown(const int key, const int x, const int y)
 {
     onSpecialKeyboard(0, key, x, y);
 }
-#pragma endregion
 
 static void initScene()
 {
