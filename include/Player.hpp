@@ -24,7 +24,6 @@ struct Player {
     Player();
     ~Player();
 
-#pragma region Rendering and control
     // Update object properties
     void update(float dt);
 
@@ -39,9 +38,7 @@ struct Player {
 
     // Handles OpenGL keyboard events
     void handleKeyboardEvent(int up, unsigned char key, int x, int y);
-#pragma endregion
 
-#pragma region Player properties
     // Do we have fuel?
     bool isEngineOn() const
     {
@@ -52,9 +49,7 @@ struct Player {
     {
         return m_position;
     }
-#pragma endregion
 
-#pragma region Debug switch getters
     bool isBirdView() const
     {
         return m_isBirdView;
@@ -64,20 +59,16 @@ struct Player {
     bool isConsoleVisible() const { return m_isConsoleVisible; }
     bool isMotionBlurEnabled() const { return m_isMotionBlurEnabled; }
     bool isMsaaEnabled() const { return m_isMsaaEnabled; }
-#pragma endregion
 
 private:
     void loadSkybox(const std::string& name);
 
-#pragma region Skybox
     Texture* m_skyboxTexture = nullptr;
     Model m_skybox { "data/skybox/skybox.obj" };
 
     float m_fogColor[4] {};
     float m_skyboxColor[4] {};
-#pragma endregion
 
-#pragma region Camera
     static constexpr double k_fov = 45.0;
     static constexpr double k_near = 0.5;
     static constexpr double k_far = 2500.0;
@@ -86,9 +77,7 @@ private:
     Vec3<double> m_centerPosition;
 
     double m_directionYaw = 0.0;
-#pragma endregion
 
-#pragma region Physics
     static constexpr double k_acceleration = 5.0;
     static constexpr double k_turnAcceleration = 5.0;
 
@@ -107,9 +96,7 @@ private:
     double m_thrustPitchAngle = 0.0;
     // Ship advance due to thrust
     double m_thrustAdvance = 0.0;
-#pragma endregion
 
-#pragma region Ship properties
     static constexpr double k_fuelConsumptionUnit = 0.0000125;
 
     // Model object
@@ -122,21 +109,16 @@ private:
 
     // Current fuel
     double m_fuel = 1.0;
-#pragma endregion
 
-#pragma region Debug switches
     bool m_isBirdView { false };
     bool m_isFogEnabled { false };
     bool m_isSkyboxVisible { true };
     bool m_isConsoleVisible { true };
     bool m_isMotionBlurEnabled { false };
     bool m_isMsaaEnabled { true };
-#pragma endregion
 
-#pragma region Control
     bool m_isThrusting { false };
     bool m_isBraking { false };
     bool m_isTurningLeft { false };
     bool m_isTurningRight { false };
-#pragma endregion
 };

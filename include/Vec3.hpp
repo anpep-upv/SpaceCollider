@@ -92,7 +92,6 @@ struct Vec3 {
             azx * x + azy * y + azz * z };
     }
 
-#pragma region Operators
     Vec3 operator+(const Vec3& other) const
     {
         return { x + other.x, y + other.y, z + other.z };
@@ -164,5 +163,4 @@ struct Vec3 {
         y /= other.y;
         z /= other.z;
     }
-#pragma endregion
 };

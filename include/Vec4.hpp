@@ -60,7 +60,6 @@ struct Vec4 {
         return *this / Vec4 { m };
     }
 
-#pragma region Operators
     Vec4 operator+(const Vec4& other) const
     {
         return { x + other.x, y + other.y, z + other.z, w + other.w };
@@ -138,5 +137,4 @@ struct Vec4 {
         z /= other.z;
         w /= other.w;
     }
-#pragma endregion
 };
