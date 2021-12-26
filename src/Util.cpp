@@ -15,16 +15,16 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
-#include <cmath>
 
-#include <Util.hpp>
 #include <GL/freeglut.h>
+#include <Util.hpp>
 
-char Util::s_consoleBuffer[512]{}; // Console text buffer
-int Util::s_consoleLines{ 0 }; // Console line count
+char Util::s_consoleBuffer[512] {}; // Console text buffer
+int Util::s_consoleLines { 0 }; // Console line count
 
 void Util::consolePrint(const char* format, ...)
 {
@@ -51,7 +51,7 @@ void Util::consoleClear()
 
 void Util::renderOverlayString(const char* string, const int x, int y)
 {
-    int viewport[4]{};
+    int viewport[4] {};
     glGetIntegerv(GL_VIEWPORT, reinterpret_cast<GLint*>(&viewport));
 
     glPushAttrib(GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT);

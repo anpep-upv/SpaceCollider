@@ -17,9 +17,9 @@
 
 #include "Util.hpp"
 
+#include <Texture.hpp>
 #include <cassert>
 #include <iostream>
-#include <Texture.hpp>
 
 #ifdef _WIN32
 #include <freeimage/FreeImage.h>
@@ -28,7 +28,7 @@
 #endif
 
 Texture::Texture(const std::string& path)
-    : m_id{ 0 }
+    : m_id { 0 }
 {
     // Generate texture
     glGenTextures(1, &m_id);

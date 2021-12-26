@@ -15,25 +15,25 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include <Model.hpp>
 #include <fstream>
 #include <iostream>
-#include <Model.hpp>
 #include <sstream>
 
 Model::Model(const std::string& rawPath)
-    : m_mtlCollection{ nullptr }
+    : m_mtlCollection { nullptr }
 {
     // Resolve absolute path
     m_parentPath = std::filesystem::absolute({ rawPath }).parent_path();
 
-    std::ifstream fileStream{ rawPath };
+    std::ifstream fileStream { rawPath };
     std::string line;
 
     while (std::getline(fileStream, line)) {
         if (line.empty())
             continue;
 
-        std::istringstream lineStream{ line };
+        std::istringstream lineStream { line };
         std::string keyword;
 
         if (!(lineStream >> keyword) || keyword[0] == '#')

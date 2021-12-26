@@ -59,7 +59,6 @@ struct Vec4 {
 
         return *this / Vec4 { m };
     }
-    
 
 #pragma region Operators
     Vec4 operator+(const Vec4& other) const

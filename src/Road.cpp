@@ -81,7 +81,6 @@ void Road::pushSlab()
     position.y = 0;
     position.z += 5;
     position.w = Util::k_tau * 200 / 50 * cosf(static_cast<float>(n) * Util::k_tau / 50);
-    
 
     m_slabs.push_back(position);
     n++;

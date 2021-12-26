@@ -12,4 +12,7 @@ ${TARGET}: ${OBJECTS}
 clean:
 	rm -f ${TARGET} ${OBJECTS}
 
-.PHONY: clean
+format:
+	clang-format -i src/*.cpp include/*.hpp
+
+.PHONY: clean format

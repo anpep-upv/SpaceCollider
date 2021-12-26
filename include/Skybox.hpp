@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include <Vec3.hpp>
 #include <Texture.hpp>
+#include <Vec3.hpp>
 
 struct Skybox {
     Skybox();
     ~Skybox() = default;
 
-    void render(const Vec3<double> &center, bool isBirdView = false, bool isVisible = true) const;
+    void render(const Vec3<double>& center, bool isBirdView = false, bool isVisible = true) const;
 
 private:
     static constexpr auto k_diag = 1.0f;

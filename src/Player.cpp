@@ -15,14 +15,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include <cmath>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
-#include <cmath>
 
+#include <GL/freeglut.h>
 #include <Player.hpp>
 #include <Util.hpp>
-#include <GL/freeglut.h>
 
 Player::Player()
 {
@@ -126,11 +126,11 @@ void Player::updateCamera()
     if (isEngineOn()) {
         // Camera stops when engine is stopped (so that the ship just flies away slowly)
         if (m_isBirdView) {
-            m_cameraPosition = m_position + Vec3<double>{ 0, 50, 50 };
+            m_cameraPosition = m_position + Vec3<double> { 0, 50, 50 };
             m_centerPosition = m_position;
         } else {
-            m_cameraPosition = m_position - (m_direction * Vec3<double>{ 10, 10, 10 });
-            m_centerPosition = m_position - (m_direction * Vec3<double>{ 0, 0, 0 });
+            m_cameraPosition = m_position - (m_direction * Vec3<double> { 10, 10, 10 });
+            m_centerPosition = m_position - (m_direction * Vec3<double> { 0, 0, 0 });
         }
     }
 

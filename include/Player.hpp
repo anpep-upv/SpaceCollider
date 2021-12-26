@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <Vec3.hpp>
 #include <Model.hpp>
+#include <Vec3.hpp>
 
 struct Player {
     Player();
@@ -55,7 +55,10 @@ struct Player {
 #pragma endregion
 
 #pragma region Debug switch getters
-    bool isBirdView() const { return m_isBirdView; }
+    bool isBirdView() const
+    {
+        return m_isBirdView;
+    }
     bool isFogEnabled() const { return m_isFogEnabled; }
     bool isSkyboxVisible() const { return m_isSkyboxVisible; }
     bool isConsoleVisible() const { return m_isConsoleVisible; }
@@ -68,10 +71,10 @@ private:
 
 #pragma region Skybox
     Texture* m_skyboxTexture = nullptr;
-    Model m_skybox{ "data/skybox/skybox.obj" };
+    Model m_skybox { "data/skybox/skybox.obj" };
 
-    float m_fogColor[4]{};
-    float m_skyboxColor[4]{};
+    float m_fogColor[4] {};
+    float m_skyboxColor[4] {};
 #pragma endregion
 
 #pragma region Camera
@@ -110,30 +113,30 @@ private:
     static constexpr double k_fuelConsumptionUnit = 0.0000125;
 
     // Model object
-    Model m_model{ "data/PLAHB1/PLAHB1.obj" };
+    Model m_model { "data/PLAHB1/PLAHB1.obj" };
 
     // Current object position in world
-    Vec3<double> m_position{ 0, 0, 0 };
+    Vec3<double> m_position { 0, 0, 0 };
     // Current object direction
-    Vec3<double> m_direction{ 0, 0, 1 };
+    Vec3<double> m_direction { 0, 0, 1 };
 
     // Current fuel
     double m_fuel = 1.0;
 #pragma endregion
 
 #pragma region Debug switches
-    bool m_isBirdView{ false };
-    bool m_isFogEnabled{ false };
-    bool m_isSkyboxVisible{ true };
-    bool m_isConsoleVisible{ true };
-    bool m_isMotionBlurEnabled{ false };
-    bool m_isMsaaEnabled{ true };
+    bool m_isBirdView { false };
+    bool m_isFogEnabled { false };
+    bool m_isSkyboxVisible { true };
+    bool m_isConsoleVisible { true };
+    bool m_isMotionBlurEnabled { false };
+    bool m_isMsaaEnabled { true };
 #pragma endregion
 
 #pragma region Control
-    bool m_isThrusting{ false };
-    bool m_isBraking{ false };
-    bool m_isTurningLeft{ false };
-    bool m_isTurningRight{ false };
+    bool m_isThrusting { false };
+    bool m_isBraking { false };
+    bool m_isTurningLeft { false };
+    bool m_isTurningRight { false };
 #pragma endregion
 };

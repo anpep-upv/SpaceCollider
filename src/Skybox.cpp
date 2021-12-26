@@ -20,12 +20,14 @@
 #include <Skybox.hpp>
 
 Skybox::Skybox()
-    : m_tex_back(Texture{ "data/skybox_back.png" })
-      , m_tex_front(Texture{ "data/skybox_front.png" })
-      , m_tex_left(Texture{ "data/skybox_left.png" })
-      , m_tex_right(Texture{ "data/skybox_right.png" })
-      , m_tex_bottom(Texture{ "data/skybox_bottom.png" })
-      , m_tex_top(Texture{ "data/skybox_top.png" }) {}
+    : m_tex_back(Texture { "data/skybox_back.png" })
+    , m_tex_front(Texture { "data/skybox_front.png" })
+    , m_tex_left(Texture { "data/skybox_left.png" })
+    , m_tex_right(Texture { "data/skybox_right.png" })
+    , m_tex_bottom(Texture { "data/skybox_bottom.png" })
+    , m_tex_top(Texture { "data/skybox_top.png" })
+{
+}
 
 void Skybox::render(const Vec3<double>& center, const bool isBirdView, const bool isVisible) const
 {

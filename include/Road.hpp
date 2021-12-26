@@ -34,8 +34,8 @@ private:
     void popSlab();
 
     float m_zero[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    float m_slabColor[4]{ 1.0f, 1.0f, 1.0f, 0.3333f };
-    float m_slabColorEmission[4]{ 0.0f, 1.0f, 1.0f, 1.0f };
+    float m_slabColor[4] { 1.0f, 1.0f, 1.0f, 0.3333f };
+    float m_slabColorEmission[4] { 0.0f, 1.0f, 1.0f, 1.0f };
 
     std::vector<Vec4<float>> m_slabs;
 };

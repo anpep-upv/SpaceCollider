@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include <GL/freeglut.h>
 #include <cstdint>
 #include <sstream>
-#include <vector>
 #include <string>
-#include <GL/freeglut.h>
+#include <vector>
 
 struct Util {
     static void consolePrint(const char* format, ...);
@@ -31,7 +31,8 @@ struct Util {
 
     static uint32_t createListCircle(float radius, int vertices);
 
-    template <typename T> static T deg2rad(T theta)
+    template <typename T>
+    static T deg2rad(T theta)
     {
         return theta * static_cast<T>(k_pi) / static_cast<T>(180);
     }
@@ -42,7 +43,8 @@ struct Util {
         return theta * static_cast<T>(180) / static_cast<T>(k_pi);
     }
 
-    template <typename T> static T random(T min, T max)
+    template <typename T>
+    static T random(T min, T max)
     {
         return min + (static_cast<T>(rand()) / static_cast<T>(RAND_MAX)) * (max - min);
     }
@@ -50,7 +52,7 @@ struct Util {
     static std::vector<std::string> splitString(const std::string& string, const char delimiter = ' ')
     {
         std::vector<std::string> segmentVector;
-        std::stringstream stringStream{ string };
+        std::stringstream stringStream { string };
         std::string segment;
 
         while (std::getline(stringStream, segment, delimiter))

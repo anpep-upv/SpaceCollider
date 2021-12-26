@@ -19,13 +19,13 @@
 
 #include "Vec2.hpp"
 
+#include <Texture.hpp>
+#include <Vec3.hpp>
 #include <cassert>
 #include <filesystem>
 #include <functional>
 #include <map>
 #include <string>
-#include <Texture.hpp>
-#include <Vec3.hpp>
 #include <vector>
 
 struct MtlCollection {
@@ -35,23 +35,25 @@ struct MtlCollection {
     };
 
     struct Material {
-        std::vector<float> vertexBuffer{};
+        std::vector<float> vertexBuffer {};
 
-        float specularExponent{};
-        float ambientReflectivity[4]{};
-        float diffuseReflectivity[4]{};
-        float specularReflectivity[4]{};
-        float emissiveReflectivity[4]{};
-        float dissolveFactor{};
-        IllumModel illumModel{};
+        float specularExponent {};
+        float ambientReflectivity[4] {};
+        float diffuseReflectivity[4] {};
+        float specularReflectivity[4] {};
+        float emissiveReflectivity[4] {};
+        float dissolveFactor {};
+        IllumModel illumModel {};
 
-        std::filesystem::path parentPath{};
-        Texture* texture{ nullptr };
+        std::filesystem::path parentPath {};
+        Texture* texture { nullptr };
 
-        Material() {}
+        Material() { }
 
         explicit Material(const std::filesystem::path parentPath)
-            : parentPath(parentPath) {}
+            : parentPath(parentPath)
+        {
+        }
 
         ~Material()
         {
@@ -87,65 +89,65 @@ private:
     using SetParamFn = std::function<void(Material&, std::vector<std::string>)>;
 
     // Keyword-parameter setting function mapping
-    const std::map<std::string, SetParamFn> k_keywordMap{
+    const std::map<std::string, SetParamFn> k_keywordMap {
         // Specular exponent (shininess)
         { "Ns", [](auto& material, auto params) {
-            assert(params.size() == 1);
-            material.specularExponent = std::stof(params[0]);
-        } },
+             assert(params.size() == 1);
+             material.specularExponent = std::stof(params[0]);
+         } },
         // Ambient reflectivity (RGB)
         { "Ka", [](auto& material, auto params) {
-            assert(params.size() == 3);
-            material.ambientReflectivity[0] = std::stof(params[0]);
-            material.ambientReflectivity[1] = std::stof(params[1]);
-            material.ambientReflectivity[2] = std::stof(params[2]);
-            material.ambientReflectivity[3] = 1.0f;
-        } },
+             assert(params.size() == 3);
+             material.ambientReflectivity[0] = std::stof(params[0]);
+             material.ambientReflectivity[1] = std::stof(params[1]);
+             material.ambientReflectivity[2] = std::stof(params[2]);
+             material.ambientReflectivity[3] = 1.0f;
+         } },
         // Diffuse reflectivity (RGB)
         { "Kd", [](auto& material, auto params) {
-            assert(params.size() == 3);
-            material.diffuseReflectivity[0] = std::stof(params[0]);
-            material.diffuseReflectivity[1] = std::stof(params[1]);
-            material.diffuseReflectivity[2] = std::stof(params[2]);
-            material.diffuseReflectivity[3] = 1.0f;
-        } },
+             assert(params.size() == 3);
+             material.diffuseReflectivity[0] = std::stof(params[0]);
+             material.diffuseReflectivity[1] = std::stof(params[1]);
+             material.diffuseReflectivity[2] = std::stof(params[2]);
+             material.diffuseReflectivity[3] = 1.0f;
+         } },
         // Specular reflectivity (RGB)
         { "Ks", [](auto& material, auto params) {
-            assert(params.size() == 3);
-            material.specularReflectivity[0] = std::stof(params[0]);
-            material.specularReflectivity[1] = std::stof(params[1]);
-            material.specularReflectivity[2] = std::stof(params[2]);
-            material.specularReflectivity[3] = 1.0f;
-        } },
+             assert(params.size() == 3);
+             material.specularReflectivity[0] = std::stof(params[0]);
+             material.specularReflectivity[1] = std::stof(params[1]);
+             material.specularReflectivity[2] = std::stof(params[2]);
+             material.specularReflectivity[3] = 1.0f;
+         } },
         // Emissive reflectivity (RGB)
         { "Ke", [](auto& material, auto params) {
-            assert(params.size() == 3);
-            material.emissiveReflectivity[0] = std::stof(params[0]);
-            material.emissiveReflectivity[1] = std::stof(params[1]);
-            material.emissiveReflectivity[2] = std::stof(params[2]);
-            material.emissiveReflectivity[3] = 1.0f;
-        } },
+             assert(params.size() == 3);
+             material.emissiveReflectivity[0] = std::stof(params[0]);
+             material.emissiveReflectivity[1] = std::stof(params[1]);
+             material.emissiveReflectivity[2] = std::stof(params[2]);
+             material.emissiveReflectivity[3] = 1.0f;
+         } },
         // Dissolve factor (opacity)
         { "d", [](auto& material, auto params) {
-            assert(params.size() == 1);
-            material.dissolveFactor = std::stof(params[0]);
-        } },
+             assert(params.size() == 1);
+             material.dissolveFactor = std::stof(params[0]);
+         } },
         // Illumination model
         { "illum", [](auto& material, auto params) {
-            //assert(params.size() == 1);
-            //assert(s_illumModelMap.count(params[0]));
-            //material.illumModel = s_illumModelMap.at(params[0]);
-        } },
+             //assert(params.size() == 1);
+             //assert(s_illumModelMap.count(params[0]));
+             //material.illumModel = s_illumModelMap.at(params[0]);
+         } },
         // Texture map
         { "map_Kd", [](auto& material, auto params) {
-            assert(params.size() == 1);
-            assert(material.texture == nullptr);
+             assert(params.size() == 1);
+             assert(material.texture == nullptr);
 
-            // Obtain full file path to the texture file
-            const std::filesystem::path filePath{ params[0] };
-            const auto fullPath = material.parentPath / filePath;
+             // Obtain full file path to the texture file
+             const std::filesystem::path filePath { params[0] };
+             const auto fullPath = material.parentPath / filePath;
 
-            material.texture = new Texture{ fullPath.generic_string() };
-        } }
+             material.texture = new Texture { fullPath.generic_string() };
+         } }
     };
 };

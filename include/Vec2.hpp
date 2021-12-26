@@ -22,13 +22,19 @@ struct Vec2 {
     T x, y;
 
     Vec2()
-        : Vec2({}, {}) { }
+        : Vec2({}, {})
+    {
+    }
 
     Vec2(const Vec2<T>& other)
-        : Vec2(other.x, other.y) { }
+        : Vec2(other.x, other.y)
+    {
+    }
 
     explicit Vec2(T all)
-        : Vec2(all, all) { }
+        : Vec2(all, all)
+    {
+    }
 
     Vec2(T x, T y)
     {
@@ -47,7 +53,7 @@ struct Vec2 {
         if (m == T())
             return {};
 
-        return *this / Vec2{ m };
+        return *this / Vec2 { m };
     }
 
 #pragma region Operators

@@ -15,10 +15,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include <GL/freeglut.h>
 #include <Player.hpp>
 #include <Road.hpp>
 #include <Util.hpp>
-#include <GL/freeglut.h>
 
 #ifndef GL_MULTISAMPLE
 #define GL_MULTISAMPLE 0x809D
@@ -108,7 +108,7 @@ static void onDisplay()
     g_scene.m_player->updateCamera();
 
     // Render scene objects
-    
+
     g_scene.m_player->render();
     glPushMatrix();
     {
@@ -209,7 +209,7 @@ static void initScene()
     glEnable(GL_TEXTURE_2D);
 
     g_scene.m_player = new Player;
-    g_scene.m_mothership = new Model{ "data/EMPFLT/EMPFLT.obj" };
+    g_scene.m_mothership = new Model { "data/EMPFLT/EMPFLT.obj" };
     g_scene.m_road = new Road;
 
     g_scene.m_initialized = true;

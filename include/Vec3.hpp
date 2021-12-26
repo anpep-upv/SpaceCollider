@@ -19,17 +19,24 @@
 
 #include <Util.hpp>
 
-template <typename T = float> struct Vec3 {
+template <typename T = float>
+struct Vec3 {
     T x, y, z;
 
     Vec3()
-        : Vec3({}, {}, {}) { }
+        : Vec3({}, {}, {})
+    {
+    }
 
     Vec3(const Vec3<T>& other)
-        : Vec3(other.x, other.y, other.z) {}
+        : Vec3(other.x, other.y, other.z)
+    {
+    }
 
     explicit Vec3(T all)
-        : Vec3(all, all, all) { }
+        : Vec3(all, all, all)
+    {
+    }
 
     Vec3(T x, T y, T z)
     {
@@ -49,7 +56,7 @@ template <typename T = float> struct Vec3 {
         if (m == T())
             return {};
 
-        return *this / Vec3{ m };
+        return *this / Vec3 { m };
     }
 
     T angleCos(const Vec3<T>& other) const
@@ -81,10 +88,9 @@ template <typename T = float> struct Vec3 {
                    azz = cosPitch * cosRoll;
 
         return { axx * x + axy * y + axz * z,
-                 ayx * y + ayy * y + ayz * z,
-                 azx * x + azy * y + azz * z };
+            ayx * y + ayy * y + ayz * z,
+            azx * x + azy * y + azz * z };
     }
-
 
 #pragma region Operators
     Vec3 operator+(const Vec3& other) const
