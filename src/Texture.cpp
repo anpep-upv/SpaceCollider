@@ -16,14 +16,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <cassert>
-#include <iostream>
 
 #include <FreeImage.h>
 #include <Texture.hpp>
-#include <Util.hpp>
 
 Texture::Texture(const std::string& path)
-    : m_id { 0 }
+    : m_id {}
 {
     // Generate texture
     glGenTextures(1, &m_id);

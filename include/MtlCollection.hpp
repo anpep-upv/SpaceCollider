@@ -29,11 +29,6 @@
 #include <Vec3.hpp>
 
 struct MtlCollection {
-    enum class IllumModel {
-        ColorAndAmbient,
-        HighlightOn
-    };
-
     struct Material {
         std::vector<float> vertexBuffer {};
 
@@ -43,14 +38,11 @@ struct MtlCollection {
         float specularReflectivity[4] {};
         float emissiveReflectivity[4] {};
         float dissolveFactor {};
-        IllumModel illumModel {};
 
-        std::filesystem::path parentPath {};
+        const std::filesystem::path &parentPath;
         Texture* texture { nullptr };
 
-        Material() { }
-
-        explicit Material(const std::filesystem::path parentPath)
+        explicit Material(const std::filesystem::path& parentPath)
             : parentPath(parentPath)
         {
         }
@@ -81,9 +73,6 @@ private:
     std::filesystem::path m_parentPath;
 
     std::map<std::string, Material> m_collection;
-
-    // String-IllumModel mapping
-    static const std::map<std::string, IllumModel> s_illumModelMap;
 
     // Parameter setting function type alias
     using SetParamFn = std::function<void(Material&, std::vector<std::string>)>;
@@ -131,12 +120,6 @@ private:
         { "d", [](auto& material, auto params) {
              assert(params.size() == 1);
              material.dissolveFactor = std::stof(params[0]);
-         } },
-        // Illumination model
-        { "illum", [](auto& material, auto params) {
-             // assert(params.size() == 1);
-             // assert(s_illumModelMap.count(params[0]));
-             // material.illumModel = s_illumModelMap.at(params[0]);
          } },
         // Texture map
         { "map_Kd", [](auto& material, auto params) {

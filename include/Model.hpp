@@ -108,18 +108,18 @@ private:
                  // TODO: support for incomplete face indices (cases 1, 2, 4)
                  assert(indices.size() == 3);
                  assert(!indices[0].empty() && !indices[1].empty() && !indices[2].empty());
-                 // Heads up! OBJ indices are 1-based, not 0-based like std::vector
-                 const auto positionIndex = std::stoi(indices[0]) - 1,
-                            textureCoordinateIndex = std::stoi(indices[1]) - 1,
-                            normalIndex = std::stoi(indices[2]) - 1;
 
+                 // Heads up! OBJ indices are 1-based, not 0-based like std::vector
+                 const auto textureCoordinateIndex = std::stoi(indices[1]) - 1;
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_textureCoordinates[textureCoordinateIndex].x);
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_textureCoordinates[textureCoordinateIndex].y);
 
+                 const auto normalIndex = std::stoi(indices[2]) - 1;
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_normals[normalIndex].x);
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_normals[normalIndex].y);
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_normals[normalIndex].z);
 
+                 const auto positionIndex = std::stoi(indices[0]) - 1;
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_vertices[positionIndex].x);
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_vertices[positionIndex].y);
                  model.m_currentMaterial->vertexBuffer.push_back(model.m_vertices[positionIndex].z);

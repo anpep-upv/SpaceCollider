@@ -54,8 +54,8 @@ struct Player {
     {
         return m_isBirdView;
     }
+
     bool isFogEnabled() const { return m_isFogEnabled; }
-    bool isSkyboxVisible() const { return m_isSkyboxVisible; }
     bool isConsoleVisible() const { return m_isConsoleVisible; }
     bool isMotionBlurEnabled() const { return m_isMotionBlurEnabled; }
     bool isMsaaEnabled() const { return m_isMsaaEnabled; }

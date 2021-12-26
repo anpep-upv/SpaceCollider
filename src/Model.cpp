@@ -48,11 +48,6 @@ Model::Model(const std::string& rawPath)
 
             k_keywordMap.at(keyword)(*this, parts);
         }
-#ifdef _DEBUG
-        else {
-            std::cerr << "WARN: unimplemented model parameter " << keyword << std::endl;
-        }
-#endif
     }
 }
 
@@ -80,6 +75,7 @@ void Model::render(const float scale) const
 
         if (material.texture != nullptr) {
             glEnable(GL_BLEND);
+            // TODO: Now that we have blending, implement material dissolve effects
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             material.texture->bind();
         }

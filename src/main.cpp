@@ -16,13 +16,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <GL/freeglut.h>
+#include <PlatformQuirks.hpp>
 #include <Player.hpp>
 #include <Road.hpp>
 #include <Util.hpp>
-
-#ifndef GL_MULTISAMPLE
-#define GL_MULTISAMPLE 0x809D
-#endif
 
 static int g_viewportWidth = 1024;
 static int g_viewportHeight = 768;

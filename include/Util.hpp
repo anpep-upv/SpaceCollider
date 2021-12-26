@@ -30,38 +30,9 @@ struct Util {
 
     static void renderOverlayString(const char* string, int x, int y);
 
-    static uint32_t createListCircle(float radius, int vertices);
+    static std::vector<std::string> splitString(const std::string& string, const char delimiter = ' ');
 
-    template <typename T>
-    static T deg2rad(T theta)
-    {
-        return theta * static_cast<T>(k_pi) / static_cast<T>(180);
-    }
-
-    template <typename T>
-    static T rad2deg(T theta)
-    {
-        return theta * static_cast<T>(180) / static_cast<T>(k_pi);
-    }
-
-    template <typename T>
-    static T random(T min, T max)
-    {
-        return min + (static_cast<T>(rand()) / static_cast<T>(RAND_MAX)) * (max - min);
-    }
-
-    static std::vector<std::string> splitString(const std::string& string, const char delimiter = ' ')
-    {
-        std::vector<std::string> segmentVector;
-        std::stringstream stringStream { string };
-        std::string segment;
-
-        while (std::getline(stringStream, segment, delimiter))
-            segmentVector.push_back(segment);
-
-        return segmentVector;
-    }
-
+    static constexpr auto k_consoleFont = GLUT_BITMAP_8_BY_13;
     static constexpr auto k_consoleFontSize = 13;
     static char s_consoleBuffer[];
     static int s_consoleLines;

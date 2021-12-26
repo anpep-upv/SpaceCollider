@@ -18,6 +18,7 @@
 #include <cmath>
 
 #include <Road.hpp>
+#include <Util.hpp>
 
 Road::Road()
 {
@@ -27,7 +28,7 @@ Road::Road()
 
 Road::~Road() { }
 
-void Road::update(float dt, const Vec3<double>& player)
+void Road::update(float, const Vec3<double>& player)
 {
     const auto& lastSlab = m_slabs.at(m_slabs.size() - 1);
     const auto distanceFromPlayer = sqrtf(powf(lastSlab.x - player.x, 2.0f) + powf(lastSlab.y - player.y, 2.0f) + powf(lastSlab.z - player.z, 2.0f));

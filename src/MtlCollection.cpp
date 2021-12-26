@@ -22,11 +22,6 @@
 
 #include <MtlCollection.hpp>
 
-const std::map<std::string, MtlCollection::IllumModel> MtlCollection::s_illumModelMap {
-    { "1", IllumModel::ColorAndAmbient },
-    { "2", IllumModel::HighlightOn }
-};
-
 MtlCollection::MtlCollection(const std::string& rawPath)
 {
     // Resolve absolute path
@@ -58,10 +53,5 @@ MtlCollection::MtlCollection(const std::string& rawPath)
 
             k_keywordMap.at(keyword)(m_collection[currentMaterialName], parts);
         }
-#ifdef _DEBUG
-        else {
-            std::cerr << "WARN: unimplemented material parameter " << keyword << std::endl;
-        }
-#endif
     }
 }

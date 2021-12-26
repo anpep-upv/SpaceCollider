@@ -100,7 +100,7 @@ void Player::update(const float dt)
         m_thrustAdvance = m_velocity / k_maxVelocity;
 
         // Recalculate yaw in general direction
-        m_directionYaw = 90 - Util::rad2deg(atan2(m_direction.z, m_direction.x));
+        m_directionYaw = 90 - atan2(m_direction.z, m_direction.x) * 180.0f / Util::k_pi;
         // Consume fuel (forward thrusters + left/right turn thrusters)
         m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
     } else {
