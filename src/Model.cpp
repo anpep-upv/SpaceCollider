@@ -78,8 +78,11 @@ void Model::render(const float scale) const
         glPushMatrix();
         glScalef(scale, scale, scale);
 
-        if (material.texture != nullptr)
+        if (material.texture != nullptr) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             material.texture->bind();
+        }
 
         glTexCoordPointer(2, GL_FLOAT, 8 * sizeof(float), material.vertexBuffer.data());
         glNormalPointer(GL_FLOAT, 8 * sizeof(float), material.vertexBuffer.data() + 2);

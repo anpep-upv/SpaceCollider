@@ -43,7 +43,7 @@ void Util::consoleClear()
     s_consoleLines = 0;
 }
 
-void Util::renderOverlayString(const char* string, const int x, int y, const float colorX, const float colorY, const float colorZ)
+void Util::renderOverlayString(const char* string, const int x, int y)
 {
     int viewport[4]{};
     glGetIntegerv(GL_VIEWPORT, reinterpret_cast<GLint*>(&viewport));
@@ -53,7 +53,7 @@ void Util::renderOverlayString(const char* string, const int x, int y, const flo
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
 
-    glColor3f(colorX, colorY, colorZ);
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -66,7 +66,43 @@ void Util::renderOverlayString(const char* string, const int x, int y, const flo
         {
             glLoadIdentity();
             glRasterPos2i(x, y);
+            bool colorChanged = false;
             while (*string) {
+                if (*string == '\x01') {
+                    // Reset
+                    glColor3f(1.0f, 1.0f, 1.0f);
+                    colorChanged = true;
+                    string++;
+                } else if (*string == '\x02') {
+                    // Red
+                    glColor3f(1.0f, 0.0f, 0.0f);
+                    colorChanged = true;
+                    string++;
+                } else if (*string == '\x03') {
+                    // Green
+                    glColor3f(0.0f, 1.0f, 0.0f);
+                    colorChanged = true;
+                    string++;
+                } else if (*string == '\x04') {
+                    // Cyan
+                    glColor3f(0.0f, 1.0f, 1.0f);
+                    colorChanged = true;
+                    string++;
+                } else if (*string == '\x05') {
+                    // Gray
+                    glColor3f(0.5f, 0.5f, 0.5f);
+                    colorChanged = true;
+                    string++;
+                }
+
+                if (colorChanged) {
+                    int currentPosition[4] = {};
+                    glGetIntegerv(GL_CURRENT_RASTER_POSITION, currentPosition);
+                    glRasterPos2iv(currentPosition);
+                    colorChanged = false;
+                    continue;
+                }
+
                 if (*string == '\n') {
                     string++;
                     y -= k_consoleFontSize;

@@ -47,6 +47,11 @@ struct Player {
     {
         return m_fuel > std::numeric_limits<double>::epsilon();
     }
+
+    const Vec3<double>& getPosition() const
+    {
+        return m_position;
+    }
 #pragma endregion
 
 #pragma region Debug switch getters
@@ -72,19 +77,19 @@ private:
 #pragma region Camera
     static constexpr double k_fov = 45.0;
     static constexpr double k_near = 0.5;
-    static constexpr double k_far = 100.0;
+    static constexpr double k_far = 2500.0;
 
     Vec3<double> m_cameraPosition;
     Vec3<double> m_centerPosition;
 
-    double m_psi = 0.0;
+    double m_directionYaw = 0.0;
 #pragma endregion
 
 #pragma region Physics
     static constexpr double k_acceleration = 5.0;
     static constexpr double k_turnAcceleration = 5.0;
 
-    static constexpr double k_maxVelocity = 10.0;
+    static constexpr double k_maxVelocity = 25.0;
     static constexpr double k_maxTurnVelocity = 2.0;
 
     double m_velocity = 0.0;
@@ -126,7 +131,8 @@ private:
 #pragma endregion
 
 #pragma region Control
-    bool m_isGoingForward{ false };
+    bool m_isThrusting{ false };
+    bool m_isBraking{ false };
     bool m_isTurningLeft{ false };
     bool m_isTurningRight{ false };
 #pragma endregion

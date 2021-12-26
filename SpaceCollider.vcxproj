@@ -196,6 +196,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Road.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\MtlCollection.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -239,6 +240,8 @@
     <ClInclude Include="include\Player.hpp" />
     <ClInclude Include="include\MtlCollection.hpp" />
     <ClInclude Include="include\Model.hpp" />
+    <ClInclude Include="include\Road.hpp" />
+    <ClInclude Include="include\Vec4.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\hoop.png">

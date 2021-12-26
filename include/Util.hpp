@@ -27,7 +27,7 @@ struct Util {
     static void consolePrint(const char* format, ...);
     static void consoleClear();
 
-    static void renderOverlayString(const char* string, int x, int y, float colorX, float colorY, float colorZ);
+    static void renderOverlayString(const char* string, int x, int y);
 
     static uint32_t createListCircle(float radius, int vertices);
 

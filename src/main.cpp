@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <Player.hpp>
-#include <Skybox.hpp>
+#include <Road.hpp>
 #include <Util.hpp>
 #include <GL/freeglut.h>
 
@@ -36,15 +36,15 @@ static int g_frameCounter = 0;
 static int g_lastFrameTime = 0, g_lastFpsTime = 0;
 #pragma endregion
 
-#pragma region Fog
-static constexpr float k_fogColor[4]{ 0.3058823529411765f, 0.4235294117647059f, 0.4235294117647059f, 1.0f };
-#pragma endregion
-
 #pragma region Scene objects
 static struct {
-    bool m_initialized{ false };
-    Skybox* m_skybox{ nullptr };
-    Player* m_player{ nullptr };
+    bool m_initialized = false;
+    Player* m_player = nullptr;
+    Model* m_mothership = nullptr;
+    Road* m_road = nullptr;
+
+    // Mothership model advance
+    float m_mothership_advance = 0.0f;
 } g_scene;
 #pragma endregion
 
@@ -70,8 +70,14 @@ static void onTimer(const int value)
     const auto currentTime = glutGet(GLUT_ELAPSED_TIME);
     const float dt = g_lastFrameTime == 0 ? 0.0f : (static_cast<float>(currentTime) - static_cast<float>(g_lastFrameTime)) / 1000.0f;
 
-    // Update objects
+    // Update player properties
     g_scene.m_player->update(dt);
+
+    // Update mothership position
+    g_scene.m_mothership_advance += 25 * dt;
+
+    // Update road properties
+    g_scene.m_road->update(dt, g_scene.m_player->getPosition());
 
     // Display FPS counter
     Util::consolePrint("%d FPS", g_fps);
@@ -102,13 +108,27 @@ static void onDisplay()
     g_scene.m_player->updateCamera();
 
     // Render scene objects
-    g_scene.m_player->render();
     
-    // Console control
-    if (g_scene.m_player->isConsoleVisible()) {
-        Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1, 0, 0, 0);
-        Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize, Util::k_consoleFontSize * Util::s_consoleLines, 1, 1, 1);
+    g_scene.m_player->render();
+    glPushMatrix();
+    {
+        // Mothership matrix
+        glTranslatef(100.0f, 0.0f, 100.0f + g_scene.m_mothership_advance);
+        g_scene.m_mothership->render(0.01f);
+        glPopMatrix();
     }
+
+    glPushMatrix();
+    {
+        glTranslatef(0.0f, -2.5f, 0.0f);
+        g_scene.m_road->render();
+        glPopMatrix();
+    }
+
+    // Console control
+    if (g_scene.m_player->isConsoleVisible())
+        Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);
+
     Util::consoleClear();
     updateFpsCounter();
 
@@ -188,23 +208,26 @@ static void initScene()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 
-    g_scene.m_skybox = new Skybox;
     g_scene.m_player = new Player;
+    g_scene.m_mothership = new Model{ "data/EMPFLT/EMPFLT.obj" };
+    g_scene.m_road = new Road;
+
     g_scene.m_initialized = true;
 }
 
 static void destroyScene()
 {
+    g_scene.m_mothership_advance = 0.0f;
     g_scene.m_initialized = false;
+    delete g_scene.m_mothership;
     delete g_scene.m_player;
-    delete g_scene.m_skybox;
 }
 
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
     glutSetOption(GLUT_MULTISAMPLE, 8);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB | GLUT_ACCUM | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGBA | GLUT_ACCUM | GLUT_MULTISAMPLE);
     glutInitWindowSize(g_viewportWidth, g_viewportHeight);
     glutCreateWindow("SpaceCollider");
 

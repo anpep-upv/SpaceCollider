@@ -34,9 +34,6 @@ struct Model {
     void render(float scale = 1.0f) const;
 
 private:
-    /* std::vector<Vec3<float>> m_vertices;
-    std::vector<Vec3<float>> m_normals;
-    std::vector<Vec2<float>> m_textureCoordinates; */
     std::vector<Vec3<float>> m_vertices;
     std::vector<Vec3<float>> m_normals;
     std::vector<Vec2<float>> m_textureCoordinates;
