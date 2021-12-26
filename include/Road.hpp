@@ -16,9 +16,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
-#include "Vec2.hpp"
-#include "Vec3.hpp"
-#include "Vec4.hpp"
+
+#include <Vec2.hpp>
+#include <Vec3.hpp>
+#include <Vec4.hpp>
 
 struct Road {
     Road();

@@ -17,8 +17,9 @@
 
 #pragma once
 
-#include <GL/freeglut.h>
 #include <string>
+
+#include <GL/freeglut.h>
 
 using TextureId = GLuint;
 

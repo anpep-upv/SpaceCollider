@@ -18,7 +18,6 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 #include <GL/freeglut.h>
 #include <Player.hpp>
@@ -182,7 +181,7 @@ void Player::render() const
         offset += 2;
         glTranslated(2, 0, 2);
         glRotated(offset, 1, 1, 0);
-        
+
         testCube.render(0.5f);
         glPopMatrix();
     }*/

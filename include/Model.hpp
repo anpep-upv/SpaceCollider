@@ -17,15 +17,17 @@
 
 #pragma once
 
-#include <GL/freeglut.h>
-#include <MtlCollection.hpp>
-#include <Vec2.hpp>
-#include <Vec3.hpp>
 #include <filesystem>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
+
+#include <GL/freeglut.h>
+#include <MtlCollection.hpp>
+#include <Util.hpp>
+#include <Vec2.hpp>
+#include <Vec3.hpp>
 
 struct Model {
     explicit Model(const std::string& rawPath);

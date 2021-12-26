@@ -17,16 +17,16 @@
 
 #pragma once
 
-#include "Vec2.hpp"
-
-#include <Texture.hpp>
-#include <Vec3.hpp>
 #include <cassert>
 #include <filesystem>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
+
+#include <Texture.hpp>
+#include <Vec2.hpp>
+#include <Vec3.hpp>
 
 struct MtlCollection {
     enum class IllumModel {
@@ -134,9 +134,9 @@ private:
          } },
         // Illumination model
         { "illum", [](auto& material, auto params) {
-             //assert(params.size() == 1);
-             //assert(s_illumModelMap.count(params[0]));
-             //material.illumModel = s_illumModelMap.at(params[0]);
+             // assert(params.size() == 1);
+             // assert(s_illumModelMap.count(params[0]));
+             // material.illumModel = s_illumModelMap.at(params[0]);
          } },
         // Texture map
         { "map_Kd", [](auto& material, auto params) {

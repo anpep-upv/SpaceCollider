@@ -19,7 +19,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 #include <MtlCollection.hpp>
 

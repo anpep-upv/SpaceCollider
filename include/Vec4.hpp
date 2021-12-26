@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <Util.hpp>
-
 template <typename T = float>
 struct Vec4 {
     T x, y, z, w;

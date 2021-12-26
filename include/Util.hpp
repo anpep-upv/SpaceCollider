@@ -17,11 +17,12 @@
 
 #pragma once
 
-#include <GL/freeglut.h>
 #include <cstdint>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include <GL/freeglut.h>
 
 struct Util {
     static void consolePrint(const char* format, ...);
