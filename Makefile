@@ -7,7 +7,7 @@ LIBS := -lGL -lGLU -lglut -lfreeimage
 all: ${TARGET}
 
 ${TARGET}: ${OBJECTS}
-	${CXX} -o $@ $< ${LIBS}
+	${CXX} -o $@ $^ ${LIBS}
 
 clean:
 	rm -f ${TARGET} ${OBJECTS}
