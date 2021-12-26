@@ -1,5 +1,5 @@
 // GraphicsKit -- Utility library for OpenGL applications
-// Copyright (c) 2021 ¡ngel PÈrez <aperpor@upv.edu.es>
+// Copyright (c) 2021 √Ångel P√©rez <aperpor@upv.edu.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License

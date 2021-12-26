@@ -1,5 +1,5 @@
 // SpaceCollider -- SGI Lab Task 9
-// Copyright (c) 2021-2022 ¡ngel PÈrez <aperpor@upv.edu.es>
+// Copyright (c) 2021-2022 √Ångel P√©rez <aperpor@upv.edu.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,7 +20,12 @@
 #include <cassert>
 #include <iostream>
 #include <Texture.hpp>
+
+#ifdef _WIN32
 #include <freeimage/FreeImage.h>
+#else
+#include <FreeImage.h>
+#endif
 
 Texture::Texture(const std::string& path)
     : m_id{ 0 }

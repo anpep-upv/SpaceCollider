@@ -1,5 +1,5 @@
 // SpaceCollider -- SGI Lab Task 9
-// Copyright (c) 2021-2022 ¡ngel PÈrez <aperpor@upv.edu.es>
+// Copyright (c) 2021-2022 √Ångel P√©rez <aperpor@upv.edu.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,8 +31,14 @@ void Util::consolePrint(const char* format, ...)
     const auto consoleLength = strlen(s_consoleBuffer);
     va_list argList;
     va_start(argList, format);
+#ifdef _MSC_VER
     vsnprintf_s(s_consoleBuffer + consoleLength, sizeof s_consoleBuffer - consoleLength, sizeof s_consoleBuffer - consoleLength - 1, format, argList);
-    strncat_s(s_consoleBuffer, sizeof s_consoleBuffer, "\n", 2);
+    strncat_s(s_consoleBuffer, sizeof s_consoleBuffer - 1, "\n", 2);
+#else
+    vsnprintf(s_consoleBuffer + consoleLength, sizeof s_consoleBuffer - consoleLength - 1, format, argList);
+    strncat(s_consoleBuffer, "\n", 2);
+#endif
+
     s_consoleLines++;
     va_end(argList);
 }

@@ -1,5 +1,5 @@
 // SpaceCollider -- SGI Lab Task 9
-// Copyright (c) 2021-2022 ¡ngel PÈrez <aperpor@upv.edu.es>
+// Copyright (c) 2021-2022 √Ångel P√©rez <aperpor@upv.edu.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,7 +15,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "Road.hpp"
+#include <cmath>
+
+#include <Road.hpp>
 
 Road::Road()
 {
