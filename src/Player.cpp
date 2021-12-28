@@ -108,6 +108,9 @@ void Player::update(const float dt)
         m_thrustPitchAngle += m_velocity * static_cast<double>(dt);
         m_fuel = 0;
     }
+
+    m_hud.updateFuel(m_fuel, 1.0f);
+    m_hud.updateSpeed(m_velocity, k_maxVelocity);
 }
 
 void Player::updateViewport(const int width, const int height)
@@ -138,6 +141,9 @@ void Player::updateCamera()
 
 void Player::render() const
 {
+    if (!m_skyboxTexture)
+        return;
+
     glPushMatrix();
     {
         // Skybox matrix
@@ -160,6 +166,23 @@ void Player::render() const
         glRotated(m_turnRollAngle, 0, 0, 1);
 
         m_model.render(0.001f);
+
+        glPopMatrix();
+    }
+
+    glPushMatrix();
+    {
+        // HUD matrix
+        glTranslated(m_position.x, m_position.y, m_position.z);
+        glRotated(m_directionYaw, 0, 1, 0);
+
+        const auto thrustAdvance = m_direction * m_thrustAdvance;
+        glTranslated(thrustAdvance.x, thrustAdvance.y, thrustAdvance.z);
+        glRotated(m_thrustPitchAngle, 1, 0, 0);
+        glRotated(m_turnYawAngle, 0, 1, 0);
+        glRotated(m_turnRollAngle, 0, 0, 1);
+        glTranslated(-3, 1, 0);
+        m_hud.render();
         glPopMatrix();
     }
 
@@ -172,19 +195,6 @@ void Player::render() const
     } else {
         glDisable(GL_FOG);
     }
-
-    /* glPushMatrix();
-    {
-        // Test cube matrix
-        static Model testCube{ "data/TEST_CUBE/TEST_CUBE.obj" };
-        static double offset = 0;
-        offset += 2;
-        glTranslated(2, 0, 2);
-        glRotated(offset, 1, 1, 0);
-
-        testCube.render(0.5f);
-        glPopMatrix();
-    }*/
 
     Util::consolePrint("SHIP");
     Util::consolePrint("  \5FUEL\1 %12lf", m_fuel);

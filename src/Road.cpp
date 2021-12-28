@@ -28,21 +28,46 @@ Road::Road()
 
 Road::~Road() { }
 
-void Road::update(float, const Vec3<double>& player)
+void Road::update(float, Player& player)
 {
-    const auto& lastSlab = m_slabs.at(m_slabs.size() - 1);
-    const auto distanceFromPlayer = sqrtf(powf(lastSlab.x - player.x, 2.0f) + powf(lastSlab.y - player.y, 2.0f) + powf(lastSlab.z - player.z, 2.0f));
+    const auto& playerPosition = player.getPosition();
 
+    const auto& lastSlab = m_slabs.at(m_slabs.size() - 1);
+    const auto distanceFromPlayer = sqrtf(powf(lastSlab.x - playerPosition.x, 2.0f) + powf(lastSlab.y - playerPosition.y, 2.0f) + powf(lastSlab.z - playerPosition.z, 2.0f));
     if (distanceFromPlayer < 250) {
         pushSlab();
         popSlab();
     }
 
     Util::consolePrint("DST    %f", distanceFromPlayer);
+
+    auto removeIndex = -1;
+    for (size_t i = 0; i < m_fuelBoxes.size(); i++) {
+        const auto& fuelBox = m_fuelBoxes.at(i);
+        const auto distanceFromPlayer = sqrtf(powf(fuelBox.x - playerPosition.x, 2.0f) + powf(fuelBox.y - playerPosition.y, 2.0f) + powf(fuelBox.z - playerPosition.z, 2.0f));
+        if (distanceFromPlayer < 5.0f)
+            removeIndex = i;
+    }
+
+    if (removeIndex != -1) {
+        m_fuelBoxes.erase(m_fuelBoxes.begin() + removeIndex);
+        player.rechargeFuel();
+    }
 }
 
 void Road::render() const
 {
+    static int fuelBoxAngle = 0;
+    for (const auto& fuelBox : m_fuelBoxes) {
+        glPushMatrix();
+        {
+            glTranslatef(fuelBox.x, fuelBox.y, fuelBox.z);
+            glRotatef(fuelBoxAngle++, 1.0f, 1.0f, 1.0f);
+            m_fuelBox.render(0.5f);
+            glPopMatrix();
+        }
+    }
+
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT);
     glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
@@ -82,6 +107,9 @@ void Road::pushSlab()
     position.y = 0;
     position.z += 5;
     position.w = Util::k_tau * 200 / 50 * cosf(static_cast<float>(n) * Util::k_tau / 50);
+
+    if (n % 45 == 0)
+        m_fuelBoxes.push_back({ position.x + 7.5f, 2.5f, position.z + 5.0f });
 
     m_slabs.push_back(position);
     n++;

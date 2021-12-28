@@ -19,19 +19,22 @@
 
 #include <vector>
 
+#include <Model.hpp>
+#include <Util.hpp>
 #include <Vec2.hpp>
 #include <Vec3.hpp>
 #include <Vec4.hpp>
+#include <Player.hpp>
 
 struct Road {
     Road();
     ~Road();
 
-    void update(float dt, const Vec3<double>& playerPosition);
+    void update(float dt, Player &player);
     void render() const;
 
 private:
-    static float trajectory(const unsigned int n) { return 0; }
+    Model m_fuelBox { "data/TEST_CUBE/TEST_CUBE.obj" };
 
     void pushSlab();
     void popSlab();
@@ -41,4 +44,5 @@ private:
     float m_slabColorEmission[4] { 0.0f, 1.0f, 1.0f, 1.0f };
 
     std::vector<Vec4<float>> m_slabs;
+    std::vector<Vec3<float>> m_fuelBoxes;
 };

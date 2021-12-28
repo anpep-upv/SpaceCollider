@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <HUD.hpp>
 #include <Model.hpp>
 #include <Vec3.hpp>
 
@@ -50,6 +51,12 @@ struct Player {
         return m_position;
     }
 
+    void rechargeFuel()
+    {
+        if (isEngineOn())
+            m_fuel = std::min(1.0, m_fuel + 0.75);
+    }
+
     bool isBirdView() const
     {
         return m_isBirdView;
@@ -62,6 +69,8 @@ struct Player {
 
 private:
     void loadSkybox(const std::string& name);
+
+    HUD m_hud;
 
     Texture* m_skyboxTexture = nullptr;
     Model m_skybox { "data/skybox/skybox.obj" };
@@ -78,7 +87,7 @@ private:
 
     double m_directionYaw = 0.0;
 
-    static constexpr double k_acceleration = 5.0;
+    static constexpr double k_acceleration = 10.0;
     static constexpr double k_turnAcceleration = 5.0;
 
     static constexpr double k_maxVelocity = 25.0;
@@ -97,7 +106,7 @@ private:
     // Ship advance due to thrust
     double m_thrustAdvance = 0.0;
 
-    static constexpr double k_fuelConsumptionUnit = 0.0000125;
+    static constexpr double k_fuelConsumptionUnit = 0.00005;
 
     // Model object
     Model m_model { "data/PLAHB1/PLAHB1.obj" };
