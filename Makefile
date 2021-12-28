@@ -1,13 +1,14 @@
 TARGET := SpaceCollider
+HEADERS := $(wildcard include/*.hpp)
 SOURCES := $(wildcard src/*.cpp)
 OBJECTS := $(patsubst %.cpp,%.o,${SOURCES})
-CXXFLAGS := -Wall -Wextra -g -O0 -Iinclude -std=c++20 -g
+CXXFLAGS := -Wall -Wextra -Wno-deprecated-copy -g -O0 -Iinclude -std=c++20 -g
 LIBS := -lGL -lGLU -lglut -lfreeimage
 
 all: ${TARGET}
 
-${TARGET}: ${OBJECTS}
-	${CXX} -o $@ $^ ${LIBS}
+${TARGET}: ${OBJECTS} ${HEADERS}
+	${CXX} -o $@ ${OBJECTS} ${LIBS}
 
 clean:
 	rm -f ${TARGET} ${OBJECTS}
