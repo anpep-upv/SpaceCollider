@@ -21,7 +21,7 @@
 #include <Texture.hpp>
 
 Texture::Texture(const std::string& path)
-    : m_id {}
+    : m_id { 0 }
 {
     // Generate texture
     glGenTextures(1, &m_id);

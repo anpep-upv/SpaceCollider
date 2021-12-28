@@ -78,7 +78,6 @@ void Road::render() const
     glMaterialfv(GL_FRONT, GL_EMISSION, m_slabColorEmission);
 
     for (const auto& slab : m_slabs) {
-
         glPushMatrix();
         {
             glTranslatef(slab.x, slab.y, slab.z);
@@ -94,7 +93,6 @@ void Road::render() const
     }
 
     glDepthMask(GL_TRUE);
-    glDisable(GL_BLEND);
     glPopAttrib();
 }
 

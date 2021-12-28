@@ -212,7 +212,7 @@ void Player::render() const
     Util::consolePrint("  \5MSAA\1 %s\1", m_isMsaaEnabled ? "\3YES" : "\2NO");
 }
 
-void Player::handleKeyboardEvent(const int up, const unsigned char key, int x, int y)
+void Player::handleKeyboardEvent(const int up, const unsigned char key, int, int)
 {
     // Player/camera controls
     if (key == 'w')
