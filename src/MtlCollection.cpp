@@ -43,7 +43,7 @@ MtlCollection::MtlCollection(const std::string& rawPath)
 
         if (keyword == "newmtl") {
             assert(lineStream >> currentMaterialName);
-            m_collection[currentMaterialName] = Material { m_parentPath };
+            m_collection[currentMaterialName] = std::make_unique<Material>(m_parentPath);
         } else if (k_keywordMap.count(keyword)) {
             // Obtain parameters
             std::vector<std::string> parts;
@@ -51,7 +51,7 @@ MtlCollection::MtlCollection(const std::string& rawPath)
             while (lineStream >> part)
                 parts.push_back(part);
 
-            k_keywordMap.at(keyword)(m_collection[currentMaterialName], parts);
+            k_keywordMap.at(keyword)(getMaterial(currentMaterialName), parts);
         }
     }
 }

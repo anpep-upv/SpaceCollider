@@ -64,29 +64,29 @@ void Model::render(const float scale) const
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     for (const auto& [_, material] : m_mtlCollection->getCollection()) {
-        glMaterialf(GL_FRONT, GL_SHININESS, material.specularExponent);
-        glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambientReflectivity);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, material.diffuseReflectivity);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, material.specularReflectivity);
-        glMaterialfv(GL_FRONT, GL_EMISSION, material.emissiveReflectivity);
+        glMaterialf(GL_FRONT, GL_SHININESS, material->specularExponent);
+        glMaterialfv(GL_FRONT, GL_AMBIENT, material->ambientReflectivity);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, material->diffuseReflectivity);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, material->specularReflectivity);
+        glMaterialfv(GL_FRONT, GL_EMISSION, material->emissiveReflectivity);
 
         glPushMatrix();
         glScalef(scale, scale, scale);
 
-        if (material.texture != nullptr) {
+        if (material->texture) {
             glEnable(GL_BLEND);
             // TODO: Now that we have blending, implement material dissolve effects
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            material.texture->bind();
+            material->texture->bind();
         }
 
-        glTexCoordPointer(2, GL_FLOAT, 8 * sizeof(float), material.vertexBuffer.data());
-        glNormalPointer(GL_FLOAT, 8 * sizeof(float), material.vertexBuffer.data() + 2);
-        glVertexPointer(3, GL_FLOAT, 8 * sizeof(float), material.vertexBuffer.data() + 5);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<int>(material.vertexBuffer.size()) / 8);
+        glTexCoordPointer(2, GL_FLOAT, 8 * sizeof(float), material->vertexBuffer.data());
+        glNormalPointer(GL_FLOAT, 8 * sizeof(float), material->vertexBuffer.data() + 2);
+        glVertexPointer(3, GL_FLOAT, 8 * sizeof(float), material->vertexBuffer.data() + 5);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<int>(material->vertexBuffer.size()) / 8);
 
-        if (material.texture != nullptr)
-            material.texture->unbind();
+        if (material->texture)
+            material->texture->unbind();
 
         glPopMatrix();
     }

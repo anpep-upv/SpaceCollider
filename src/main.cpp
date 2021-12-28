@@ -30,13 +30,13 @@ static int g_frameCounter = 0;
 static int g_lastFrameTime = 0, g_lastFpsTime = 0;
 
 static struct {
-    bool m_initialized = false;
-    Player* m_player = nullptr;
-    Model* m_mothership = nullptr;
-    Road* m_road = nullptr;
+    bool initialized;
+    std::unique_ptr<Player> player;
+    std::unique_ptr<Model> mothership;
+    std::unique_ptr<Road> road;
 
     // Mothership model advance
-    float m_mothership_advance = 0.0f;
+    float mothershipAdvance = 0.0f;
 } g_scene;
 
 static void updateFpsCounter()
@@ -59,13 +59,13 @@ static void onTimer(const int value)
     const float dt = g_lastFrameTime == 0 ? 0.0f : (static_cast<float>(currentTime) - static_cast<float>(g_lastFrameTime)) / 1000.0f;
 
     // Update player properties
-    g_scene.m_player->update(dt);
+    g_scene.player->update(dt);
 
     // Update mothership position
-    g_scene.m_mothership_advance += 25 * dt;
+    g_scene.mothershipAdvance += 25 * dt;
 
     // Update road properties
-    g_scene.m_road->update(dt, g_scene.m_player->getPosition());
+    g_scene.road->update(dt, *g_scene.player);
 
     // Display FPS counter
     Util::consolePrint("%d FPS", g_fps);
@@ -78,7 +78,7 @@ static void onTimer(const int value)
 
 static void onDisplay()
 {
-    if (!g_scene.m_initialized)
+    if (!g_scene.initialized)
         return;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -87,41 +87,43 @@ static void onDisplay()
     glLoadIdentity();
 
     // Multisample antialiasing
-    if (g_scene.m_player->isMsaaEnabled())
+    if (g_scene.player->isMsaaEnabled())
         glEnable(GL_MULTISAMPLE);
     else
         glDisable(GL_MULTISAMPLE);
 
     // Camera control
-    g_scene.m_player->updateCamera();
+    g_scene.player->updateCamera();
 
     // Render scene objects
-
-    g_scene.m_player->render();
     glPushMatrix();
     {
         // Mothership matrix
-        glTranslatef(100.0f, 0.0f, 100.0f + g_scene.m_mothership_advance);
-        g_scene.m_mothership->render(0.01f);
+        glTranslatef(100.0f, 0.0f, 100.0f + g_scene.mothershipAdvance);
+        g_scene.mothership->render(0.01f);
         glPopMatrix();
     }
 
+    g_scene.player->render();
+
     glPushMatrix();
     {
+        // Road matrix
+        // The road object must be rendered the last in order to achieve alpha blending
         glTranslatef(0.0f, -2.5f, 0.0f);
-        g_scene.m_road->render();
+        g_scene.road->render();
         glPopMatrix();
     }
 
     // Console control
-    if (g_scene.m_player->isConsoleVisible())
+    if (g_scene.player->isConsoleVisible())
         Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);
 
     Util::consoleClear();
     updateFpsCounter();
 
     // Motion blur
-    if (g_scene.m_player->isMotionBlurEnabled()) {
+    if (g_scene.player->isMotionBlurEnabled()) {
         glAccum(GL_MULT, 0.5f);
         glAccum(GL_ACCUM, 1.0f - 0.5f);
         glAccum(GL_RETURN, 1.0f);
@@ -139,7 +141,7 @@ static void onReshape(const int width, const int height)
 
 static void onKeyboard(const int up, const unsigned char key, const int x, const int y)
 {
-    g_scene.m_player->handleKeyboardEvent(up, key, x, y);
+    g_scene.player->handleKeyboardEvent(up, key, x, y);
 }
 
 static void onSpecialKeyboard(const int up, int specialKey, const int x, const int y)
@@ -193,19 +195,19 @@ static void initScene()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 
-    g_scene.m_player = new Player;
-    g_scene.m_mothership = new Model { "data/EMPFLT/EMPFLT.obj" };
-    g_scene.m_road = new Road;
-
-    g_scene.m_initialized = true;
+    g_scene.player = std::make_unique<Player>();
+    g_scene.mothership = std::make_unique<Model>("data/EMPFLT/EMPFLT.obj");
+    g_scene.road = std::make_unique<Road>();
+    g_scene.initialized = true;
 }
 
 static void destroyScene()
 {
-    g_scene.m_mothership_advance = 0.0f;
-    g_scene.m_initialized = false;
-    delete g_scene.m_mothership;
-    delete g_scene.m_player;
+    g_scene.mothershipAdvance = 0.0f;
+    g_scene.initialized = false;
+    g_scene.road.reset();
+    g_scene.mothership.reset();
+    g_scene.player.reset();
 }
 
 int main(int argc, char** argv)

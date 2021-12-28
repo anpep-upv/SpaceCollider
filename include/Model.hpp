@@ -70,7 +70,7 @@ private:
         { "usemtl", [](auto& model, auto params) {
              assert(params.size() == 1);
              assert(model.m_mtlCollection != nullptr);
-             model.m_currentMaterial = model.m_mtlCollection->getMaterialPtr(params[0]);
+             model.m_currentMaterial = &model.m_mtlCollection->getMaterial(params[0]);
          } },
 
         // Vertex positions

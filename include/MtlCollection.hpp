@@ -39,32 +39,32 @@ struct MtlCollection {
         float emissiveReflectivity[4] {};
         float dissolveFactor {};
 
-        const std::filesystem::path &parentPath;
-        Texture* texture { nullptr };
+        std::filesystem::path parentPath;
+        std::unique_ptr<Texture> texture;
 
-        explicit Material(const std::filesystem::path& parentPath)
+        Material() {}
+
+        Material(std::filesystem::path& parentPath)
             : parentPath(parentPath)
         {
         }
 
         ~Material()
         {
-            delete texture;
-            texture = nullptr;
         }
     };
 
     explicit MtlCollection(const std::string& rawPath);
     ~MtlCollection() = default;
 
-    const std::map<std::string, Material>& getCollection() const
+    const std::map<std::string, std::unique_ptr<Material>>& getCollection() const
     {
         return m_collection;
     }
 
-    Material* getMaterialPtr(const std::string& name)
+    Material& getMaterial(const std::string& name)
     {
-        return &m_collection.at(name);
+        return *m_collection.at(name);
     }
 
 private:
@@ -72,7 +72,7 @@ private:
     // This is used to resolve absolute texture paths
     std::filesystem::path m_parentPath;
 
-    std::map<std::string, Material> m_collection;
+    std::map<std::string, std::unique_ptr<Material>> m_collection;
 
     // Parameter setting function type alias
     using SetParamFn = std::function<void(Material&, std::vector<std::string>)>;
@@ -130,7 +130,7 @@ private:
              const std::filesystem::path filePath { params[0] };
              const auto fullPath = material.parentPath / filePath;
 
-             material.texture = new Texture { fullPath.generic_string() };
+             material.texture = std::make_unique<Texture>(fullPath.generic_string());
          } }
     };
 };
