@@ -400,3 +400,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Makefile depends
+*.d
+
+# Linux binary
+/SpaceCollider
