@@ -69,6 +69,5 @@ void HUD::render() const
     renderBar(1, "SPEED", m_speed);
 
     glDepthMask(GL_TRUE);
-    glDisable(GL_BLEND);
     glPopAttrib();
 }
