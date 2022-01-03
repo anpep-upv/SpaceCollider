@@ -1,19 +1,22 @@
-TARGET := SpaceCollider
-HEADERS := $(wildcard include/*.hpp)
 SOURCES := $(wildcard src/*.cpp)
-OBJECTS := $(patsubst %.cpp,%.o,${SOURCES})
-CXXFLAGS := -Wall -Wextra -Wno-deprecated-copy -g -O0 -Iinclude -std=c++20 -g
+OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
+DEPENDS := $(patsubst %.cpp,%.d,$(SOURCES))
+
+CXXFLAGS := -Wall -Wextra -Wno-deprecated-copy -g -Iinclude -std=c++20
 LIBS := -lGL -lGLU -lglut -lfreeimage
 
-all: ${TARGET}
+.PHONY: all clean
 
-${TARGET}: ${OBJECTS} ${HEADERS}
-	${CXX} -o $@ ${OBJECTS} ${LIBS}
+all: SpaceCollider
 
 clean:
-	rm -f ${TARGET} ${OBJECTS}
+	${RM} ${OBJECTS} ${DEPENDS} SpaceCollider
 
-format:
-	clang-format -i src/*.cpp include/*.hpp
+# Linking the executable from the object files
+SpaceCollider: ${OBJECTS}
+	${CXX} ${CXXFLAGS} $^ -o $@ ${LIBS}
 
-.PHONY: clean format all
+-include $(DEPENDS)
+
+%.o: %.cpp Makefile
+	${CXX} ${CXXFLAGS} -MMD -MP -c $< -o $@
