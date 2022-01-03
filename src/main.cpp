@@ -15,8 +15,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include "Tunnel.hpp"
 #include <GL/freeglut.h>
 #include <HUD.hpp>
+#include <MothershipModel.hpp>
 #include <PlatformQuirks.hpp>
 #include <Player.hpp>
 #include <Road.hpp>
@@ -33,11 +35,9 @@ static int g_lastFrameTime = 0, g_lastFpsTime = 0;
 static struct {
     bool initialized;
     std::unique_ptr<Player> player;
-    std::unique_ptr<Model> mothership;
-    std::unique_ptr<Road> road;
-
-    // Mothership model advance
-    float mothershipAdvance = 0.0f;
+    std::unique_ptr<Model> skybox;
+    std::unique_ptr<MothershipModel> mothership;
+    std::unique_ptr<Tunnel> tunnel;
 } g_scene;
 
 static void updateFpsCounter()
@@ -59,14 +59,10 @@ static void onTimer(const int value)
     const auto currentTime = glutGet(GLUT_ELAPSED_TIME);
     const float dt = g_lastFrameTime == 0 ? 0.0f : (static_cast<float>(currentTime) - static_cast<float>(g_lastFrameTime)) / 1000.0f;
 
-    // Update player properties
     g_scene.player->update(dt);
-
-    // Update mothership position
-    g_scene.mothershipAdvance += 25 * dt;
-
-    // Update road properties
-    g_scene.road->update(dt, *g_scene.player);
+    g_scene.skybox->setPosition(g_scene.player->getPosition());
+    g_scene.mothership->update(dt);
+    g_scene.tunnel->update(dt, *g_scene.player);
 
     // Display FPS counter
     Util::consolePrint("%d FPS", g_fps);
@@ -84,6 +80,7 @@ static void onDisplay()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -97,24 +94,13 @@ static void onDisplay()
     g_scene.player->updateCamera();
 
     // Render scene objects
-    glPushMatrix();
-    {
-        // Mothership matrix
-        glTranslatef(100.0f, 0.0f, 100.0f + g_scene.mothershipAdvance);
-        g_scene.mothership->render(0.01f);
-        glPopMatrix();
-    }
-
+    g_scene.skybox->render();
+    g_scene.mothership->render();
+    // g_scene.road->renderBeacons();
     g_scene.player->render();
 
-    glPushMatrix();
-    {
-        // Road matrix
-        // The road object must be rendered the last in order to achieve alpha blending
-        glTranslatef(0.0f, -2.5f, 0.0f);
-        g_scene.road->render();
-        glPopMatrix();
-    }
+    // Render alpha-blended objects
+    g_scene.tunnel->render();
 
     // Console control
     if (g_scene.player->isConsoleVisible())
@@ -192,21 +178,21 @@ static void onSpecialKeyboardDown(const int key, const int x, const int y)
 
 static void initScene()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 
     g_scene.player = std::make_unique<Player>();
-    g_scene.mothership = std::make_unique<Model>("data/EMPFLT/EMPFLT.obj");
-    g_scene.road = std::make_unique<Road>();
+    g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1000.0f));
+    g_scene.mothership = std::make_unique<MothershipModel>();
+    g_scene.tunnel = std::make_unique<Tunnel>();
     g_scene.initialized = true;
 }
 
 static void destroyScene()
 {
-    g_scene.mothershipAdvance = 0.0f;
     g_scene.initialized = false;
-    g_scene.road.reset();
+    g_scene.tunnel.reset();
     g_scene.mothership.reset();
     g_scene.player.reset();
 }
