@@ -57,7 +57,7 @@ struct MtlCollection {
     explicit MtlCollection(const std::string& rawPath);
     ~MtlCollection() = default;
 
-    const std::map<std::string, std::unique_ptr<Material>>& getCollection() const
+    std::map<std::string, std::unique_ptr<Material>>& getCollection()
     {
         return m_collection;
     }
