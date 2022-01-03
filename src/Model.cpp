@@ -20,13 +20,17 @@
 
 #include <Model.hpp>
 
-Model::Model(const std::string& rawPath)
-    : m_mtlCollection { nullptr }
+Model::Model(const std::string& rawPath, const Vec3<float>& position, const Vec3<float>& scale, const float rotationAngle, const Vec3<float>& rotationAxis)
+    : m_position(position)
+    , m_scale(scale)
+    , m_rotationAngle(rotationAngle)
+    , m_rotationAxis(rotationAxis)
+    , m_mtlCollection(nullptr)
 {
     // Resolve absolute path
     m_parentPath = std::filesystem::absolute({ rawPath }).parent_path();
 
-    std::ifstream fileStream { rawPath };
+    std::ifstream fileStream(rawPath);
     std::string line;
 
     while (std::getline(fileStream, line)) {
@@ -51,13 +55,9 @@ Model::Model(const std::string& rawPath)
     }
 }
 
-Model::~Model()
-{
-    delete m_mtlCollection;
-    m_mtlCollection = nullptr;
-}
+void Model::update(float dt) { }
 
-void Model::render(const float scale) const
+void Model::render() const
 {
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -71,11 +71,13 @@ void Model::render(const float scale) const
         glMaterialfv(GL_FRONT, GL_EMISSION, material->emissiveReflectivity);
 
         glPushMatrix();
-        glScalef(scale, scale, scale);
+        glTranslatef(m_position.x, m_position.y, m_position.z);
+        glScalef(m_scale.x, m_scale.y, m_scale.z);
+        glRotatef(m_rotationAngle, m_rotationAxis.x, m_rotationAxis.y, m_rotationAxis.z);
 
         if (material->texture) {
             glEnable(GL_BLEND);
-            // TODO: Now that we have blending, implement material dissolve effects
+            glEnable(GL_DEPTH_TEST);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             material->texture->bind();
         }
@@ -91,6 +93,7 @@ void Model::render(const float scale) const
         glPopMatrix();
     }
 
+    glDisable(GL_COLOR_MATERIAL);
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
