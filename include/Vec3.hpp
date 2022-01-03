@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <cmath>
+
 template <typename T = float>
 struct Vec3 {
     T x, y, z;
