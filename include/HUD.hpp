@@ -20,16 +20,13 @@
 #include <string>
 
 struct HUD {
-    HUD();
-    ~HUD() = default;
-
     void render() const;
 
-    void updateSpeed(float currentSpeed, float maxSpeed) { m_speed = static_cast<double>(currentSpeed / maxSpeed); }
-    void updateFuel(float currentFuel, float maxFuel) { m_fuel = static_cast<double>(currentFuel / maxFuel); }
+    void updateSpeed(float currentSpeed, float maxSpeed) { m_speed = currentSpeed / maxSpeed; }
+    void updateFuel(float currentFuel, float maxFuel) { m_fuel = currentFuel / maxFuel; }
 
 private:
-    static void renderBar(unsigned int index, const std::string& label, double value);
+    static void renderBar(unsigned int index, const std::string& label, float value);
 
-    double m_speed, m_fuel;
+    float m_speed, m_fuel;
 };

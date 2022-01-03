@@ -31,12 +31,12 @@ struct Util {
     static void renderOverlayString(const char* string, int x, int y);
 
     static std::vector<std::string> splitString(const std::string& string, const char delimiter = ' ');
-
+    
     static constexpr auto k_consoleFont = GLUT_BITMAP_8_BY_13;
     static constexpr auto k_consoleFontSize = 13;
     static char s_consoleBuffer[];
     static int s_consoleLines;
 
-    static constexpr auto k_pi = 3.141592653589793;
+    static constexpr auto k_pi = 3.141592653589793f;
     static constexpr auto k_tau = 6.283185307179586f;
 };

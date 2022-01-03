@@ -18,9 +18,7 @@
 #include <GL/freeglut.h>
 #include <HUD.hpp>
 
-HUD::HUD() { }
-
-void HUD::renderBar(unsigned int index, const std::string& label, double value)
+void HUD::renderBar(unsigned int index, const std::string& label, float value)
 {
     glPushMatrix();
     {

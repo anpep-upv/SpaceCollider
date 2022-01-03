@@ -69,12 +69,12 @@ struct Vec3 {
 
     Vec3 rotated(const Vec3& r) const
     {
-        const auto cosYaw = cos(r.x),
-                   cosPitch = cos(r.y),
-                   cosRoll = cos(r.z);
-        const auto sinYaw = sin(r.x),
-                   sinPitch = sin(r.y),
-                   sinRoll = sin(r.z);
+        const auto cosYaw = std::cos(r.x),
+                   cosPitch = std::cos(r.y),
+                   cosRoll = std::cos(r.z);
+        const auto sinYaw = std::sin(r.x),
+                   sinPitch = std::sin(r.y),
+                   sinRoll = std::sin(r.z);
         const auto axx = cosYaw * cosPitch,
                    axy = cosYaw * sinPitch * sinRoll - sinYaw * cosRoll,
                    axz = cosYaw * sinPitch * cosRoll + sinYaw * sinRoll;
@@ -85,9 +85,11 @@ struct Vec3 {
                    azy = cosPitch * sinRoll,
                    azz = cosPitch * cosRoll;
 
-        return { axx * x + axy * y + axz * z,
+        return {
+            axx * x + axy * y + axz * z,
             ayx * y + ayy * y + ayz * z,
-            azx * x + azy * y + azz * z };
+            azx * x + azy * y + azz * z
+        };
     }
 
     Vec3 operator+(const Vec3& other) const
