@@ -1,0 +1,13 @@
+# Blender MTL File: 'yoshi_falls.blend'
+# Material Count: 1
+
+newmtl box_mat
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.778039 0.778039 0.778039
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd box_mat.png
+map_d box_mat.png

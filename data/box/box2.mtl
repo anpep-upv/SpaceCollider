@@ -1,0 +1,14 @@
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl box_mat
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.778039 0.778039 0.778039
+Ks 0.000000 0.000000 0.000000
+Ke 1.000000 1.000000 1.000000
+Ni 1.000000
+d 0.500000
+illum 1
+map_Kd box_mat.png
+map_d box_mat.png
