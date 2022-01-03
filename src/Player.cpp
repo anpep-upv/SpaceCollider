@@ -278,30 +278,3 @@ void Player::handleKeyboardEvent(const int up, const unsigned char key, int, int
     if (key == 'n' && up)
         m_isMsaaEnabled = !m_isMsaaEnabled;
 }
-
-void Player::loadSkybox(const std::string& name)
-{
-    // Read ambient/fog color
-    std::ifstream ambientFileStream("data/skybox/" + name + "_ambient.dat");
-    if (std::string line; std::getline(ambientFileStream, line)) {
-        std::istringstream ambientColorStream(line);
-
-        // Read R, G, B
-        for (int i = 0; i < 3; i++) {
-            std::string channel;
-            assert(ambientColorStream >> channel);
-            m_fogColor[i] = static_cast<float>(std::stoi(channel)) / 255.0f;
-            m_skyboxColor[i] = m_fogColor[i] + 0.5f;
-        }
-
-        m_fogColor[3] = 1.0f;
-        m_skyboxColor[3] = 1.0f;
-
-        // Set ambient light
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_skyboxColor);
-        glEnable(GL_LIGHTING);
-    }
-
-    // Read texture
-    m_skyboxTexture = new Texture("data/skybox/" + name + ".png");
-}
