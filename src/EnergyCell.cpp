@@ -28,9 +28,11 @@ void EnergyCell::update(float dt, const Player& player)
     m_boxModel.setRotation(m_keyframe, Vec3(0.0f, 1.0f, 1.0f));
 
     if (const auto distance = (m_boxModel.getPosition() - player.getPosition()).magnitude();
-        m_callback && distance < 5) {
+        distance < 5) {
         // Player collided with this energy cell
-        m_callback(*this);
+        m_hasCollidedWithPlayer = true;
+        if (m_callback)
+            m_callback(*this);
     }
 }
 

@@ -73,7 +73,8 @@ static void onTimer(const int value)
     const float dt = g_lastFrameTime == 0 ? 0.0f : (static_cast<float>(currentTime) - static_cast<float>(g_lastFrameTime)) / 1000.0f;
 
     g_scene.player->update(dt);
-    g_scene.skybox->setPosition(g_scene.player->getPosition());
+    if (g_scene.player->isEngineOn())
+        g_scene.skybox->setPosition(g_scene.player->getPosition());
     g_scene.mothership->update(dt);
     g_scene.tunnel->update(dt, *g_scene.player);
 
@@ -255,7 +256,7 @@ static void initScene()
         SoundtrackManager::the().enqueueTrack(entry.path().string());
     }
 
-    SoundtrackManager::the().playNextTrack();
+    // SoundtrackManager::the().playNextTrack();
     g_scene.isInitialized = true;
 }
 

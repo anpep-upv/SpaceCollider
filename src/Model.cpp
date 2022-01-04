@@ -59,6 +59,18 @@ void Model::update(float dt) { }
 
 void Model::render() const
 {
+    glPushMatrix();
+    glTranslatef(m_position.x, m_position.y, m_position.z);
+    glScalef(m_scale.x, m_scale.y, m_scale.z);
+    glRotatef(m_rotationAngle, m_rotationAxis.x, m_rotationAxis.y, m_rotationAxis.z);
+
+    renderNoTransform();
+
+    glPopMatrix();
+}
+
+void Model::renderNoTransform() const
+{
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -72,11 +84,6 @@ void Model::render() const
         glMaterialfv(GL_FRONT, GL_DIFFUSE, material->diffuseReflectivity);
         glMaterialfv(GL_FRONT, GL_SPECULAR, material->specularReflectivity);
         glMaterialfv(GL_FRONT, GL_EMISSION, material->emissiveReflectivity);
-
-        glPushMatrix();
-        glTranslatef(m_position.x, m_position.y, m_position.z);
-        glScalef(m_scale.x, m_scale.y, m_scale.z);
-        glRotatef(m_rotationAngle, m_rotationAxis.x, m_rotationAxis.y, m_rotationAxis.z);
 
         if (material->texture) {
             glEnable(GL_BLEND);
@@ -92,8 +99,6 @@ void Model::render() const
 
         if (material->texture)
             material->texture->unbind();
-
-        glPopMatrix();
     }
 
     glDisable(GL_COLOR_MATERIAL);

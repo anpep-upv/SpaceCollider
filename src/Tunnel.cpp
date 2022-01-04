@@ -17,10 +17,6 @@
 
 #include <Tunnel.hpp>
 
-Tunnel::Tunnel()
-{
-}
-
 void Tunnel::update(float dt, Player& player)
 {
     Util::consolePrint("ENDD %f", (player.getPosition() - trajectory(m_endChunk)).magnitude());
@@ -35,10 +31,28 @@ void Tunnel::update(float dt, Player& player)
 
         if (m_endChunk % k_energyCellPeriod == 0) {
             // Spawn a new energy cell
-            m_energyCells.push_back(EnergyCell(trajectory(m_endChunk)));
-            m_energyCells[m_energyCells.size() - 1].bindCollisionCallback([&player](const auto&) {
+            m_energyCells.push_back(std::make_unique<EnergyCell>(trajectory(m_endChunk)));
+            m_energyCells[m_energyCells.size() - 1]->bindCollisionCallback([&player](const auto&) {
                 player.rechargeFuel();
             });
+        }
+
+        if (m_endChunk % k_beaconPeriod == 0) {
+            // Spawn two beacons
+            auto position = trajectory(m_endChunk);
+            position.x -= k_tunnelRadius + 2;
+            m_beacons.push_back(std::make_unique<BeaconModel>(position));
+            position.x += 2 * (k_tunnelRadius + 2);
+            m_beacons.push_back(std::make_unique<BeaconModel>(position));
+        }
+
+        if (m_endChunk % k_lightPeriod == 0) {
+            // Spawn a light
+            auto position = trajectory(m_endChunk);
+            position.y += 15;
+
+            auto direction = (position - trajectory(m_endChunk - 1)).normalized();
+            m_lights.push_back(std::make_unique<Light>(position, direction, player));
         }
 
         if ((m_endChunk - m_startChunk) > k_maxChunks)
@@ -51,14 +65,25 @@ void Tunnel::update(float dt, Player& player)
         m_endChunk--; // Render more chunks
     }
 
-    for (auto& energyCell : m_energyCells)
-        energyCell.update(dt, player);
+    for (auto& energyCell : m_energyCells) {
+        energyCell->update(dt, player);
+        if (energyCell->hasCollidedWithPlayer())
+            energyCell.reset();
+    }
+
+    for (auto& light : m_lights)
+        light->update(dt);
+
+    m_energyCells.erase(std::remove(begin(m_energyCells), end(m_energyCells), nullptr), end(m_energyCells));
 
     m_playerPosition = player.getPosition();
 }
 
 void Tunnel::render() const
 {
+    for (const auto& beacon : m_beacons)
+        beacon->render();
+
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT);
     glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
@@ -66,7 +91,7 @@ void Tunnel::render() const
 
     // Render light threads for every chunk of the tunnel
     for (unsigned int thread = 0; thread < k_lightThreads; thread++) {
-        float alpha = 0.75f * abs(sinf(thread * 64));
+        float alpha = 0.6666f * abs(sinf(thread * 64));
         const auto theta = Util::k_tau * (thread / static_cast<float>(k_lightThreads));
         const auto dx = k_tunnelRadius * cos(theta),
                    dy = k_tunnelRadius * sin(theta);
@@ -79,8 +104,18 @@ void Tunnel::render() const
             if (chunk >= m_nearestChunk + 50)
                 alpha -= 0.005f;
 
-            const float diffuseColor[] { 1, 0, 0, alpha };
-            const float emissionColor[] { 1, 0, 0, 1 };
+            float diffuseColor[] { 1, 0, 0, alpha };
+            float emissionColor[] { 1, 0, 0, 1 };
+
+            if (thread == 3 * k_lightThreads / 4) {
+                float intensity = 0;
+                if ((chunk % 5 == 0 || (chunk + 1) % 5 == 0)) {
+                    // White stripe
+                    intensity = 1;
+                }
+                diffuseColor[0] = diffuseColor[1] = diffuseColor[2] = diffuseColor[3] = intensity * alpha;
+                emissionColor[0] = emissionColor[1] = emissionColor[2] = emissionColor[3] = intensity * alpha;
+            }
 
             glMaterialfv(GL_FRONT, GL_AMBIENT, diffuseColor);
             glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor);
@@ -98,7 +133,17 @@ void Tunnel::render() const
     renderBottomLight();
 
     for (const auto& energyCell : m_energyCells)
-        energyCell.render();
+        energyCell->render();
+
+    bool isAnyEnabled = false;
+    for (const auto& light : m_lights) {
+        light->render();
+        if (light->isLightEnabled())
+            isAnyEnabled = true;
+    }
+
+    if (!isAnyEnabled)
+        glDisable(GL_LIGHT1);
 }
 
 void Tunnel::renderBottomLight() const

@@ -20,13 +20,13 @@
 #include <cmath>
 #include <vector>
 
+#include <BeaconModel.hpp>
 #include <EnergyCell.hpp>
+#include <Light.hpp>
 #include <Player.hpp>
 #include <Vec3.hpp>
 
 struct Tunnel {
-    Tunnel();
-
     void update(float dt, Player& player);
     void render() const;
 
@@ -48,7 +48,13 @@ private:
     static constexpr float k_chunkLength = 5;
 
     // Spawn an energy cell every n chunks
-    static constexpr unsigned int k_energyCellPeriod = 30;
+    static constexpr unsigned int k_energyCellPeriod = 40;
+
+    // Spawn a beacon every n chunks
+    static constexpr unsigned int k_beaconPeriod = 20;
+
+    // Spawn a light every n chunks
+    static constexpr unsigned int k_lightPeriod = 25;
 
     // Number of light threads
     static constexpr unsigned int k_lightThreads = 48;
@@ -75,5 +81,7 @@ private:
 
     Vec3<float> m_playerPosition;
 
-    std::vector<EnergyCell> m_energyCells;
+    std::vector<std::unique_ptr<EnergyCell>> m_energyCells;
+    std::vector<std::unique_ptr<BeaconModel>> m_beacons;
+    std::vector<std::unique_ptr<Light>> m_lights;
 };

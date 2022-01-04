@@ -20,6 +20,8 @@
 #include <Model.hpp>
 #include <Vec3.hpp>
 
+//m_model("data/TBEACR/TBEACR.obj", position, Vec3(0.001f), 90, Vec3(0.0f, 1.0f, 0.0f))
+
 struct MothershipModel : public Model {
     MothershipModel()
         : Model("data/EMPFLT/EMPFLT.obj", Vec3(400.0f, 0.0f, 100.0f), Vec3(0.01f))

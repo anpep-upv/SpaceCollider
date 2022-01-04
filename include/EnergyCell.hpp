@@ -31,13 +31,14 @@ struct EnergyCell {
     void update(float dt, const Player& player);
     void render() const;
 
+    bool hasCollidedWithPlayer() const { return m_hasCollidedWithPlayer; }
     void bindCollisionCallback(CallbackFn callback) { m_callback = callback; }
 
 private:
     CallbackFn m_callback;
 
     int m_keyframe;
+    bool m_hasCollidedWithPlayer;
 
     Model m_boxModel { "data/box/box.obj", Vec3(), Vec3(1.5f) };
-    // Model m_cellModel;
 };

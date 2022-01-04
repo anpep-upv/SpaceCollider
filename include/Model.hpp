@@ -33,7 +33,7 @@ struct Model {
     Model(const std::string& rawPath, const Vec3<float>& position = {}, const Vec3<float>& scale = { 1, 1, 1 }, float rotationAngle = 0, const Vec3<float>& rotationAxis = {});
 
     virtual void update(float dt);
-    void render() const;
+    virtual void render() const;
 
     const Vec3<float>& getPosition() const { return m_position; }
     const Vec3<float>& getScale() const { return m_scale; }
@@ -55,6 +55,8 @@ protected:
     Vec3<float> m_scale;
     float m_rotationAngle;
     Vec3<float> m_rotationAxis;
+
+    void renderNoTransform() const;
 
 private:
     std::vector<Vec3<float>> m_vertices;
