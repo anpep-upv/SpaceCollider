@@ -20,17 +20,9 @@
 #include <Model.hpp>
 #include <Vec3.hpp>
 
-using LightId = GLenum;
-
-struct BeaconModel {
-    BeaconModel(const Vec3<float>& position);
-    ~BeaconModel();
-
-    void update(float dt);
-    void render() const;
-
-private:
-    static LightId s_lastId;
-    LightId m_id;
-    Model m_model;
+struct BeaconModel : public Model {
+    explicit BeaconModel(const Vec3<float>& position)
+        : Model("data/TBEACR/TBEACR.obj", position, Vec3(0.001f), 90, Vec3(0.0f, 1.0f, 0.0f))
+    {
+    }
 };
