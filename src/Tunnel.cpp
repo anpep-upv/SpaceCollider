@@ -91,7 +91,7 @@ void Tunnel::render() const
 
     // Render light threads for every chunk of the tunnel
     for (unsigned int thread = 0; thread < k_lightThreads; thread++) {
-        float alpha = 0.6666f * abs(sinf(thread * 64));
+        float alpha = 0.6666f * abs(sin(thread * 64));
         const auto theta = Util::k_tau * (thread / static_cast<float>(k_lightThreads));
         const auto dx = k_tunnelRadius * cos(theta),
                    dy = k_tunnelRadius * sin(theta);
@@ -102,7 +102,7 @@ void Tunnel::render() const
             const auto position = trajectory(chunk);
 
             if (chunk >= m_nearestChunk + 50)
-                alpha -= 0.005f;
+                alpha -= 0.025f;
 
             float diffuseColor[] { 1, 0, 0, alpha };
             float emissionColor[] { 1, 0, 0, 1 };
