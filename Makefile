@@ -3,7 +3,7 @@ OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
 DEPENDS := $(patsubst %.cpp,%.d,$(SOURCES))
 
 CXXFLAGS := -Wall -Wextra -Wno-deprecated-copy -g -Iinclude -std=c++20
-LIBS := -lGL -lGLU -lglut -lfreeimage
+LIBS := -lGL -lGLU -lglut -lfreeimage -lpulse-simple -lpulse -pthread
 
 .PHONY: all clean
 

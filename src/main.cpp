@@ -15,14 +15,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include <cmath>
-
 #include <GL/freeglut.h>
-#include <HUD.hpp>
 #include <Keymap.hpp>
 #include <MothershipModel.hpp>
 #include <PlatformQuirks.hpp>
 #include <Player.hpp>
+#include <SoundtrackManager.hpp>
 #include <Tunnel.hpp>
 #include <Util.hpp>
 
@@ -128,6 +126,8 @@ static void onDisplay()
 
     if (g_isConsoleVisible)
         Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);
+
+    Util::renderOverlayString("\5Now Playing:\1 JazzyCal - Cruising", 16, g_viewportHeight - Util::k_consoleFontSize - 16);
 
     Util::consoleClear();
     updateFpsCounter();
@@ -238,14 +238,17 @@ static void initScene()
     glEnable(GL_TEXTURE_2D);
 
     g_scene.player = std::make_unique<Player>();
-    g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1000.0f));
+    g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
     g_scene.mothership = std::make_unique<MothershipModel>();
     g_scene.tunnel = std::make_unique<Tunnel>();
+    SoundtrackManager::the().loadTrack("data/soundtrack.wav");
+    SoundtrackManager::the().playTrack();
     g_scene.isInitialized = true;
 }
 
 static void destroyScene()
 {
+    SoundtrackManager::the().stopTrack();
     g_scene.isInitialized = false;
     g_scene.tunnel.reset();
     g_scene.mothership.reset();
