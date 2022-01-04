@@ -28,6 +28,6 @@ struct MothershipModel : public Model {
 
     void update(float dt)
     {
-        m_position.z += 75 * dt;
+        m_position.z += 45 * dt;
     }
 };
