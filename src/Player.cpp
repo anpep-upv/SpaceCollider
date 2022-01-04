@@ -100,8 +100,17 @@ void Player::update(const float dt)
     m_hud.updateFuel(m_fuel, 1.0f);
     m_hud.updateSpeed(m_velocity, k_maxVelocity);
 
-    // Set opacity of the thruster additive material
-    // am_model.getMaterialCollection().getMaterial("tex_13_additive").texture = nullptr;
+    const float relativeVelocity = m_velocity / k_maxVelocity;
+    auto &turnedOffThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13"),
+         &turnedOnThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13_additive");
+    
+    turnedOnThrusterMaterial.isVisible = m_isThrusting;
+    turnedOffThrusterMaterial.isVisible = !m_isThrusting;
+
+    if (turnedOnThrusterMaterial.isVisible) {
+        for (int i = 0; i < 3; i++)
+            turnedOnThrusterMaterial.emissiveReflectivity[i] = relativeVelocity;
+    }
 }
 
 void Player::updateViewport(const int width, const int height)
