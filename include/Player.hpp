@@ -33,12 +33,6 @@ struct Player {
 
     const Vec3<float>& getPosition() const { return m_position; }
 
-    bool isBirdView() const { return m_isBirdView; }
-    bool isFogEnabled() const { return m_isFogEnabled; }
-    bool isConsoleVisible() const { return m_isConsoleVisible; }
-    bool isMotionBlurEnabled() const { return m_isMotionBlurEnabled; }
-    bool isMsaaEnabled() const { return m_isMsaaEnabled; }
-
     void rechargeFuel()
     {
         if (isEngineOn())
@@ -48,38 +42,26 @@ struct Player {
 private:
     HUD m_hud;
 
+    // Camera constants
     static constexpr double k_fov = 45.0;
     static constexpr double k_near = 0.5;
     static constexpr double k_far = 2500.0;
 
+    // Camera properties
     Vec3<float> m_cameraPosition;
     Vec3<float> m_centerPosition;
 
-    float m_directionYaw = 0.0f;
-
+    // Physics constants
     static constexpr float k_acceleration = 10.0f;
     static constexpr float k_turnAcceleration = 5.0f;
-
     static constexpr float k_maxVelocity = 50.0f;
     static constexpr float k_maxTurnVelocity = 2.0f;
+    static constexpr float k_fuelConsumptionUnit = 0.00005f;
 
+    // Physics properties
     float m_velocity = 0.0f;
     float m_turnLeftVelocity = 0.0f;
     float m_turnRightVelocity = 0.0f;
-
-    // Ship roll due to turning
-    float m_turnRollAngle = 0.0f;
-    // Ship yaw due to turning
-    float m_turnYawAngle = 0.0f;
-    // Ship pitch due to thrust
-    float m_thrustPitchAngle = 0.0f;
-    // Ship advance due to thrust
-    float m_thrustAdvance = 0.0f;
-
-    static constexpr float k_fuelConsumptionUnit = 0.00005f;
-
-    // Model object
-    Model m_model { "data/PLAHB1/PLAHB1.obj", {}, Vec3(0.001f) };
 
     // Current object position in world
     Vec3<float> m_position;
@@ -89,15 +71,27 @@ private:
     // Current fuel
     float m_fuel = 1.0f;
 
-    bool m_isBirdView = false;
-    bool m_isFogEnabled = false;
-    bool m_isSkyboxVisible = true;
-    bool m_isConsoleVisible = true;
-    bool m_isMotionBlurEnabled = false;
-    bool m_isMsaaEnabled = true;
+    // Ship roll due to turning
+    float m_turnRollAngle = 0.0f;
+    // Ship yaw due to turning
+    float m_turnYawAngle = 0.0f;
+    // Ship pitch due to thrust
+    float m_thrustPitchAngle = 0.0f;
+    // Ship advance due to thrust
+    float m_thrustAdvance = 0.0f;
+    // Ship yaw associated to general direction
+    float m_directionYaw = 0.0f;
 
+    // Physics toggles
     bool m_isThrusting = false;
     bool m_isBraking = false;
     bool m_isTurningLeft = false;
     bool m_isTurningRight = false;
+
+    // Debug/camera toggles
+    bool m_isHUDVisible = true;
+    bool m_isBirdViewActive = false;
+
+    // Player ship model
+    Model m_model { "data/PLAHB1/PLAHB1.obj", {}, Vec3(0.001f) };
 };

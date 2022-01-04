@@ -15,30 +15,43 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include "Tunnel.hpp"
+#include <cmath>
+
 #include <GL/freeglut.h>
 #include <HUD.hpp>
+#include <Keymap.hpp>
 #include <MothershipModel.hpp>
 #include <PlatformQuirks.hpp>
 #include <Player.hpp>
-#include <Road.hpp>
+#include <Tunnel.hpp>
 #include <Util.hpp>
 
+// Viewport properties
 static int g_viewportWidth = 1024;
 static int g_viewportHeight = 768;
 
+// Frame rate control
 static constexpr int k_maxFps = 60;
-static int g_fps = 0;
+static int g_fps = 0, g_worstFps = 0, g_bestFps = 0;
 static int g_frameCounter = 0;
 static int g_lastFrameTime = 0, g_lastFpsTime = 0;
 
+// Scene
 static struct {
-    bool initialized;
+    bool isInitialized;
+
     std::unique_ptr<Player> player;
     std::unique_ptr<Model> skybox;
     std::unique_ptr<MothershipModel> mothership;
     std::unique_ptr<Tunnel> tunnel;
 } g_scene;
+
+// Debug toggles
+static bool g_isFogEnabled = false;
+static bool g_isSkyboxVisible = true;
+static bool g_isMSAAEnabled = true;
+static bool g_isConsoleVisible = true;
+static bool g_isMotionBlurEnabled = false;
 
 static void updateFpsCounter()
 {
@@ -49,6 +62,8 @@ static void updateFpsCounter()
     if (dt >= 1000) {
         // One second has elapsed
         g_fps = g_frameCounter;
+        g_bestFps = std::max(g_fps, g_bestFps);
+        g_worstFps = std::min(g_fps, g_worstFps);
         g_frameCounter = 0;
         g_lastFpsTime = currentTime;
     }
@@ -65,7 +80,15 @@ static void onTimer(const int value)
     g_scene.tunnel->update(dt, *g_scene.player);
 
     // Display FPS counter
-    Util::consolePrint("%d FPS", g_fps);
+    Util::consolePrint("FPS");
+    Util::consolePrint("  \5CUR\1  %d f/s", g_fps);
+    Util::consolePrint("  \5MIN\1  %d f/s    \5MAX\1  %d f/s", g_worstFps, g_bestFps);
+
+    // Display state
+    Util::consolePrint("DBUG");
+    Util::consolePrint("  \5FOG\1  %s\1", g_isFogEnabled ? "\3YES" : "\2NO");
+    Util::consolePrint("  \5ACUM\1 %s\1", g_isMotionBlurEnabled ? "\3YES" : "\x02NO");
+    Util::consolePrint("  \5MSAA\1 %s\1", g_isMSAAEnabled ? "\3YES" : "\2NO");
 
     // Reschedule timer
     g_lastFrameTime = currentTime;
@@ -75,7 +98,7 @@ static void onTimer(const int value)
 
 static void onDisplay()
 {
-    if (!g_scene.initialized)
+    if (!g_scene.isInitialized)
         return;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -85,7 +108,7 @@ static void onDisplay()
     glLoadIdentity();
 
     // Multisample antialiasing
-    if (g_scene.player->isMsaaEnabled())
+    if (g_isMSAAEnabled)
         glEnable(GL_MULTISAMPLE);
     else
         glDisable(GL_MULTISAMPLE);
@@ -94,23 +117,22 @@ static void onDisplay()
     g_scene.player->updateCamera();
 
     // Render scene objects
-    g_scene.skybox->render();
+    if (g_isSkyboxVisible)
+        g_scene.skybox->render();
+
     g_scene.mothership->render();
-    // g_scene.road->renderBeacons();
     g_scene.player->render();
 
     // Render alpha-blended objects
     g_scene.tunnel->render();
 
-    // Console control
-    if (g_scene.player->isConsoleVisible())
+    if (g_isConsoleVisible)
         Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);
 
     Util::consoleClear();
     updateFpsCounter();
 
-    // Motion blur
-    if (g_scene.player->isMotionBlurEnabled()) {
+    if (g_isMotionBlurEnabled) {
         glAccum(GL_MULT, 0.5f);
         glAccum(GL_ACCUM, 1.0f - 0.5f);
         glAccum(GL_RETURN, 1.0f);
@@ -128,7 +150,40 @@ static void onReshape(const int width, const int height)
 
 static void onKeyboard(const int up, const unsigned char key, const int x, const int y)
 {
-    g_scene.player->handleKeyboardEvent(up, key, x, y);
+    if (!Keymap::the().contains(key))
+        return;
+
+    switch (Keymap::the().at(key)) {
+    case Keymap::InputCommand::ToggleWireframeView:
+        // TODO
+        break;
+    case Keymap::InputCommand::ToggleLightingMode:
+        // TODO
+        break;
+    case Keymap::InputCommand::ToggleFog:
+        if (up)
+            g_isFogEnabled = !g_isFogEnabled;
+        break;
+    case Keymap::InputCommand::ToggleSkybox:
+        if (up)
+            g_isSkyboxVisible = !g_isSkyboxVisible;
+        break;
+    case Keymap::InputCommand::ToggleConsole:
+        if (up)
+            g_isConsoleVisible = !g_isConsoleVisible;
+        break;
+    case Keymap::InputCommand::ToggleMotionBlur:
+        if (up)
+            g_isMotionBlurEnabled = !g_isMotionBlurEnabled;
+        break;
+    case Keymap::InputCommand::ToggleMSAA:
+        if (up)
+            g_isMSAAEnabled = !g_isMSAAEnabled;
+        break;
+    default:
+        g_scene.player->handleKeyboardEvent(up, key, x, y);
+        break;
+    }
 }
 
 static void onSpecialKeyboard(const int up, int specialKey, const int x, const int y)
@@ -137,16 +192,16 @@ static void onSpecialKeyboard(const int up, int specialKey, const int x, const i
 
     switch (specialKey) {
     case GLUT_KEY_UP:
-        translatedKey = 'w';
+        translatedKey = KEY_TRANSLATION_UP;
         break;
     case GLUT_KEY_LEFT:
-        translatedKey = 'a';
+        translatedKey = KEY_TRANSLATION_LEFT;
         break;
     case GLUT_KEY_DOWN:
-        translatedKey = 's';
+        translatedKey = KEY_TRANSLATION_DOWN;
         break;
     case GLUT_KEY_RIGHT:
-        translatedKey = 'd';
+        translatedKey = KEY_TRANSLATION_RIGHT;
         break;
     default:
         translatedKey = static_cast<unsigned char>(specialKey & 0xFF);
@@ -186,12 +241,12 @@ static void initScene()
     g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1000.0f));
     g_scene.mothership = std::make_unique<MothershipModel>();
     g_scene.tunnel = std::make_unique<Tunnel>();
-    g_scene.initialized = true;
+    g_scene.isInitialized = true;
 }
 
 static void destroyScene()
 {
-    g_scene.initialized = false;
+    g_scene.isInitialized = false;
     g_scene.tunnel.reset();
     g_scene.mothership.reset();
     g_scene.player.reset();

@@ -18,6 +18,7 @@
 #include <cmath>
 
 #include <GL/freeglut.h>
+#include <Keymap.hpp>
 #include <Player.hpp>
 #include <Util.hpp>
 
@@ -117,7 +118,7 @@ void Player::updateCamera()
 {
     if (isEngineOn()) {
         // Camera stops when engine is stopped (so that the ship just flies away slowly)
-        if (m_isBirdView) {
+        if (m_isBirdViewActive) {
             m_cameraPosition = m_position + Vec3<float> { 0, 50, 50 };
             m_centerPosition = m_position;
         } else {
@@ -206,20 +207,22 @@ void Player::render() const
         glPopMatrix();
     }
 
-    glPushMatrix();
-    {
-        // HUD matrix
-        glTranslatef(m_position.x, m_position.y, m_position.z);
-        glRotatef(m_directionYaw, 0, 1, 0);
+    if (m_isHUDVisible) {
+        glPushMatrix();
+        {
+            // HUD matrix
+            glTranslatef(m_position.x, m_position.y, m_position.z);
+            glRotatef(m_directionYaw, 0, 1, 0);
 
-        const auto thrustAdvance = m_direction * m_thrustAdvance;
-        glTranslatef(thrustAdvance.x, thrustAdvance.y, thrustAdvance.z);
-        glRotatef(m_thrustPitchAngle, 1, 0, 0);
-        glRotatef(m_turnYawAngle, 0, 1, 0);
-        glRotatef(m_turnRollAngle, 0, 0, 1);
-        glTranslatef(-3, 1, 0);
-        m_hud.render();
-        glPopMatrix();
+            const auto thrustAdvance = m_direction * m_thrustAdvance;
+            glTranslatef(thrustAdvance.x, thrustAdvance.y, thrustAdvance.z);
+            glRotatef(m_thrustPitchAngle, 1, 0, 0);
+            glRotatef(m_turnYawAngle, 0, 1, 0);
+            glRotatef(m_turnRollAngle, 0, 0, 1);
+            glTranslatef(-3, 1, 0);
+            m_hud.render();
+            glPopMatrix();
+        }
     }
 
 #if 0
@@ -236,45 +239,48 @@ void Player::render() const
     }
 #endif
 
-    Util::consolePrint("SHIP");
+    Util::consolePrint("PROP");
+    Util::consolePrint("  \5CMR\1  %s", m_isBirdViewActive ? "BRD" : "PRP");
     Util::consolePrint("  \5FUEL\1 %12lf", m_fuel);
 
-    Util::consolePrint("PLYR");
+    Util::consolePrint("PHYS");
     Util::consolePrint("  \5CTL\1  %cT%cB%cL%cR\1", m_isThrusting ? '\4' : '\5', m_isBraking ? '\4' : '\5', m_isTurningLeft ? '\4' : '\5', m_isTurningRight ? '\4' : '\5');
     Util::consolePrint("  \5POS\1  %12f %12f %12f", m_position.x, m_position.y, m_position.z);
     Util::consolePrint("  \5DIR\1  %12f %12f %12f", m_direction.x, m_direction.y, m_direction.z);
     Util::consolePrint("  \5VEL\1  %12f %12f %12f", m_velocity, m_turnLeftVelocity, m_turnRightVelocity);
-
-    Util::consolePrint("DBUG");
-    Util::consolePrint("  \5CMR\1  %s", m_isBirdView ? "BRD" : "PRP");
-    Util::consolePrint("  \5FOG\1  %s\1", m_isFogEnabled ? "\3YES" : "\2NO");
-    Util::consolePrint("  \5ACUM\1 %s\1", m_isMotionBlurEnabled ? "\3YES" : "\x02NO");
-    Util::consolePrint("  \5MSAA\1 %s\1", m_isMsaaEnabled ? "\3YES" : "\2NO");
 }
 
 void Player::handleKeyboardEvent(const int up, const unsigned char key, int, int)
 {
-    // Player/camera controls
-    if (key == 'w')
-        m_isThrusting = !static_cast<bool>(up);
-    if (key == 'a')
-        m_isTurningLeft = !static_cast<bool>(up);
-    if (key == 's')
-        m_isBraking = !static_cast<bool>(up);
-    if (key == 'd')
-        m_isTurningRight = !static_cast<bool>(up);
+    if (!Keymap::the().contains(key))
+        return;
 
-    // Option toggles
-    if (key == 'b' && up)
-        m_isBirdView = !m_isBirdView;
-    if (key == 'f' && up)
-        m_isFogEnabled = !m_isFogEnabled;
-    if (key == 's' && up)
-        m_isSkyboxVisible = !m_isSkyboxVisible;
-    if (key == 'c' && up)
-        m_isConsoleVisible = !m_isConsoleVisible;
-    if (key == 'm' && up)
-        m_isMotionBlurEnabled = !m_isMotionBlurEnabled;
-    if (key == 'n' && up)
-        m_isMsaaEnabled = !m_isMsaaEnabled;
+    const auto cmd = Keymap::the().at(key);
+    switch (cmd) {
+        // Player control
+    case Keymap::InputCommand::Thrust:
+        m_isThrusting = !up;
+        break;
+    case Keymap::InputCommand::Brake:
+        m_isBraking = !up;
+        break;
+    case Keymap::InputCommand::TurnLeft:
+        m_isTurningLeft = !up;
+        break;
+    case Keymap::InputCommand::TurnRight:
+        m_isTurningRight = !up;
+        break;
+
+        // Debug toggles
+    case Keymap::InputCommand::ToggleHUD:
+        if (up)
+            m_isHUDVisible = !m_isHUDVisible;
+        break;
+
+        // Camera control
+    case Keymap::InputCommand::ToggleBirdView:
+        if (up)
+            m_isBirdViewActive = !m_isBirdViewActive;
+        break;
+    }
 }
