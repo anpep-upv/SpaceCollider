@@ -119,10 +119,8 @@ static void onDisplay()
         g_scene.skybox->render();
 
     g_scene.mothership->render();
-    g_scene.player->render();
-
-    // Render alpha-blended objects
     g_scene.tunnel->render();
+    g_scene.player->render();
 
     if (g_isConsoleVisible)
         Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);

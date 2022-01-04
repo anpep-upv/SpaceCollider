@@ -39,4 +39,5 @@ struct Util {
 
     static constexpr auto k_pi = 3.141592653589793f;
     static constexpr auto k_tau = 6.283185307179586f;
+    static constexpr auto k_e = 2.718281828459045f;
 };

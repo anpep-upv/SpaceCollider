@@ -31,23 +31,30 @@ struct Tunnel {
     void render() const;
 
 private:
-    void renderChunk(unsigned int chunk) const;
+    // Renders the light from beneath the tunnel
+    void renderBottomLight() const;
 
     // Minimum distance from the player to the last chunk of the tunnel that will be
     // visible before starting to generate new chunks
-    static constexpr float k_minGenDistance = 500;
+    static constexpr float k_minGenDistance = 1500;
 
     // Minimum number of chunks that can be rendered at a given time
-    static constexpr unsigned int k_minChunks = 100;
+    static constexpr unsigned int k_minChunks = 750;
 
     // Maximum number of chunks that can be rendered at a given time
-    static constexpr unsigned int k_maxChunks = 250;
+    static constexpr unsigned int k_maxChunks = 1500;
 
     // Length of each chunk
     static constexpr float k_chunkLength = 5;
 
     // Spawn an energy cell every n chunks
     static constexpr unsigned int k_energyCellPeriod = 30;
+
+    // Number of light threads
+    static constexpr unsigned int k_lightThreads = 48;
+
+    // Distance of every light thread from the center of the tunnel
+    static constexpr unsigned int k_tunnelRadius = 16;
 
     inline Vec3<float> trajectory(unsigned int chunk) const
     {
@@ -61,10 +68,12 @@ private:
     }
 
     unsigned int m_startChunk = 1;
-    unsigned int m_endChunk = m_startChunk; //m_startChunk + k_minChunks;
+    unsigned int m_endChunk = 1;
 
     unsigned int m_nearestChunk = m_startChunk;
     float m_distanceFromNearestChunk = 0;
+
+    Vec3<float> m_playerPosition;
 
     std::vector<EnergyCell> m_energyCells;
 };

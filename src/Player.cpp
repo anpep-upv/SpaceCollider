@@ -132,25 +132,6 @@ void Player::updateCamera()
 
 void Player::render() const
 {
-    {
-        // TOOD: improve this code
-        // this is road lighting code
-        const float lightAmbient[4] { 0, 0, 0, 0 };
-        glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-
-        const float lightPosition[4] { m_position.x, m_position.y - 2, m_position.z, 1 };
-        glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-
-        const float lightColor[4] { 0, 1, 1, 1 };
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
-
-        const float spotDirection[3] { 0, 1, 0 };
-        glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 90);
-        glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotDirection);
-        glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 5);
-
-        glEnable(GL_LIGHT0);
-    }
 
 #if 0
     glPushMatrix();

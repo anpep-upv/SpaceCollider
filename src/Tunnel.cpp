@@ -53,27 +53,75 @@ void Tunnel::update(float dt, Player& player)
 
     for (auto& energyCell : m_energyCells)
         energyCell.update(dt, player);
+
+    m_playerPosition = player.getPosition();
 }
 
 void Tunnel::render() const
 {
-    for (unsigned int chunk = m_startChunk; chunk <= m_endChunk; chunk++) {
+    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT);
+    glDepthMask(GL_FALSE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Render light threads for every chunk of the tunnel
+    for (unsigned int thread = 0; thread < k_lightThreads; thread++) {
+        float alpha = 0.75f * abs(sinf(thread * 64));
+        const auto theta = Util::k_tau * (thread / static_cast<float>(k_lightThreads));
+        const auto dx = k_tunnelRadius * cos(theta),
+                   dy = k_tunnelRadius * sin(theta);
+
+        glLineWidth(3.0f);
+        glBegin(GL_LINE_STRIP);
+        for (unsigned int chunk = m_startChunk; chunk <= m_endChunk; chunk++) {
+            const auto position = trajectory(chunk);
+
+            if (chunk >= m_nearestChunk + 50)
+                alpha -= 0.005f;
+
+            const float diffuseColor[] { 1, 0, 0, alpha };
+            const float emissionColor[] { 1, 0, 0, 1 };
+
+            glMaterialfv(GL_FRONT, GL_AMBIENT, diffuseColor);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor);
+            glMaterialfv(GL_FRONT, GL_EMISSION, emissionColor);
+
+            glVertex3f(dx + position.x, dy + position.y, position.z);
+        }
+        glEnd();
+        glLineWidth(1.0f);
     }
 
-#if 0
-    for (unsigned int chunk = m_startChunk; chunk <= m_endChunk; chunk++) {
-        const auto position = trajectory(chunk);
+    glDepthMask(GL_TRUE);
+    glPopAttrib();
 
-        glColor3f(1, m_nearestChunk == chunk ? (1 - (m_distanceFromNearestChunk / 50)) : 0, 0);
-
-        glPushMatrix();
-        glTranslatef(position.x, position.y + 1, position.z);
-        glutSolidCube(0.5);
-        glPopMatrix();
-    }
-#endif
+    renderBottomLight();
 
     for (const auto& energyCell : m_energyCells)
         energyCell.render();
+}
+
+void Tunnel::renderBottomLight() const
+{
+    const float lightAmbient[4] { 0, 0, 0, 0 };
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+
+    const float lightPosition[4] { m_playerPosition.x, m_playerPosition.y - 2, m_playerPosition.z, 1 };
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+    const float lightColor[4] { 1, 0, 0, 1 };
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+
+    const float specularColor[4] { 1, 0, 0, 1 };
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularColor);
+
+    const float spotDirection[3] { 0, 1, 0 };
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 90);
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotDirection);
+    float x = pow(Util::k_e, m_distanceFromNearestChunk / (k_chunkLength));
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, x);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, x);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, x);
+
+    glEnable(GL_LIGHT0);
 }
