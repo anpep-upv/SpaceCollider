@@ -64,6 +64,9 @@ void Model::render() const
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     for (const auto& [_, material] : m_mtlCollection->getCollection()) {
+        if (!material->isVisible)
+            continue;
+
         glMaterialf(GL_FRONT, GL_SHININESS, material->specularExponent);
         glMaterialfv(GL_FRONT, GL_AMBIENT, material->ambientReflectivity);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, material->diffuseReflectivity);

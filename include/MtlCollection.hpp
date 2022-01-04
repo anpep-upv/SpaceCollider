@@ -32,17 +32,17 @@ struct MtlCollection {
     struct Material {
         std::vector<float> vertexBuffer {};
 
+        bool isVisible { true };
         float specularExponent {};
         float ambientReflectivity[4] {};
         float diffuseReflectivity[4] {};
         float specularReflectivity[4] {};
         float emissiveReflectivity[4] {};
-        float dissolveFactor {};
 
         std::filesystem::path parentPath;
         std::unique_ptr<Texture> texture;
 
-        Material() {}
+        Material() { }
 
         Material(std::filesystem::path& parentPath)
             : parentPath(parentPath)
@@ -115,11 +115,6 @@ private:
              material.emissiveReflectivity[1] = std::stof(params[1]);
              material.emissiveReflectivity[2] = std::stof(params[2]);
              material.emissiveReflectivity[3] = 1.0f;
-         } },
-        // Dissolve factor (opacity)
-        { "d", [](auto& material, auto params) {
-             assert(params.size() == 1);
-             material.dissolveFactor = std::stof(params[0]);
          } },
         // Texture map
         { "map_Kd", [](auto& material, auto params) {
