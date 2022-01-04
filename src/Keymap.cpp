@@ -34,7 +34,9 @@ const std::map<unsigned char, Keymap::InputCommand> Keymap::m_keymap {
     { '6', InputCommand::ToggleSkybox },
     { '7', InputCommand::ToggleConsole },
     { '8', InputCommand::ToggleMotionBlur },
-    { '9', InputCommand::ToggleMSAA }
+    { '9', InputCommand::ToggleMSAA },
+
+    { 'm', InputCommand::ToggleSoundtrack },
 #else
     // Required style
     { KEY_TRANSLATION_UP, InputCommand::Thrust },
@@ -51,6 +53,8 @@ const std::map<unsigned char, Keymap::InputCommand> Keymap::m_keymap {
     { 'k', InputCommand::ToggleSkybox },
     { 'o', InputCommand::ToggleConsole },
     { 'm', InputCommand::ToggleMotionBlur },
-    { 'a', InputCommand::ToggleMSAA }
+    { 'a', InputCommand::ToggleMSAA },
+
+    { 'u', InputCommand::ToggleSoundtrack }
 #endif // KEYMAP_CLASSIC
 };

@@ -19,9 +19,10 @@
 
 #include <fstream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
-#include <mutex>
+#include <vector>
 
 struct SoundtrackManager {
     static SoundtrackManager& the()
@@ -37,13 +38,17 @@ struct SoundtrackManager {
     bool isTrackPlaying() const { return m_isTrackPlaying; }
     const std::string& getTrackName() const { return m_trackName; }
 
-    bool loadTrack(const std::string& path);
-    bool playTrack();
+    bool enqueueTrack(const std::string& path);
+    bool playNextTrack();
     bool stopTrack();
+
+    bool skipNextTrack();
+    bool skipPreviousTrack();
 
 private:
     SoundtrackManager() { }
 
+    bool loadTrack(const std::string& path);
     bool threadPlayTrack();
 
     static SoundtrackManager* s_instance;
@@ -51,7 +56,11 @@ private:
     std::thread m_playbackThread;
     std::atomic<bool> m_isTrackPlaying;
     std::mutex m_trackStreamLock;
+    std::ifstream m_trackStream;
+
     std::string m_trackPath;
     std::string m_trackName;
-    std::ifstream m_trackStream;
+
+    std::vector<std::string> m_trackQueue;
+    unsigned int m_trackQueueIndex;
 };

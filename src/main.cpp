@@ -127,7 +127,8 @@ static void onDisplay()
     if (g_isConsoleVisible)
         Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);
 
-    Util::renderOverlayString("\5Now Playing:\1 JazzyCal - Cruising", 16, g_viewportHeight - Util::k_consoleFontSize - 16);
+    if (SoundtrackManager::the().isTrackPlaying())
+        Util::renderOverlayString(("\5Now Playing:\1 " + SoundtrackManager::the().getTrackName()).c_str(), 16, g_viewportHeight - Util::k_consoleFontSize - 16);
 
     Util::consoleClear();
     updateFpsCounter();
@@ -179,6 +180,14 @@ static void onKeyboard(const int up, const unsigned char key, const int x, const
     case Keymap::InputCommand::ToggleMSAA:
         if (up)
             g_isMSAAEnabled = !g_isMSAAEnabled;
+        break;
+    case Keymap::InputCommand::ToggleSoundtrack:
+        if (up) {
+            if (SoundtrackManager::the().isTrackPlaying())
+                SoundtrackManager::the().stopTrack();
+            else
+                SoundtrackManager::the().playNextTrack();
+        }
         break;
     default:
         g_scene.player->handleKeyboardEvent(up, key, x, y);
@@ -241,8 +250,14 @@ static void initScene()
     g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
     g_scene.mothership = std::make_unique<MothershipModel>();
     g_scene.tunnel = std::make_unique<Tunnel>();
-    SoundtrackManager::the().loadTrack("data/soundtrack.wav");
-    SoundtrackManager::the().playTrack();
+
+    for (const auto& entry : std::filesystem::directory_iterator("data/soundtrack")) {
+        if (!entry.is_regular_file() || entry.path().extension().string() != ".wav")
+            continue;
+        SoundtrackManager::the().enqueueTrack(entry.path().string());
+    }
+
+    SoundtrackManager::the().playNextTrack();
     g_scene.isInitialized = true;
 }
 

@@ -38,7 +38,10 @@ struct Keymap {
         ToggleSkybox,
         ToggleConsole,
         ToggleMotionBlur,
-        ToggleMSAA
+        ToggleMSAA,
+
+        // Soundtrack control
+        ToggleSoundtrack
     };
 
     static const std::map<unsigned char, InputCommand>& the() { return m_keymap; }

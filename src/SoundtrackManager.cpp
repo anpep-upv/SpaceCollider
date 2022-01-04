@@ -15,6 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include <filesystem>
 #include <fstream>
 
 #ifdef __linux__
@@ -44,20 +45,27 @@ SoundtrackManager::~SoundtrackManager()
         m_playbackThread.join();
 }
 
+bool SoundtrackManager::enqueueTrack(const std::string& path)
+{
+    m_trackQueue.push_back(path);
+}
+
 bool SoundtrackManager::loadTrack(const std::string& path)
 {
-    const std::lock_guard guard(m_trackStreamLock);
-
-    if (m_isTrackPlaying)
-        return false;
+    std::filesystem::path fsPath(path);
+    if (m_trackStream.is_open())
+        m_trackStream.close();
     m_trackStream.open(path, std::ifstream::binary);
+    m_trackName = fsPath.stem();
     return !m_trackStream.fail();
 }
 
-bool SoundtrackManager::playTrack()
+bool SoundtrackManager::playNextTrack()
 {
     if (isTrackPlaying())
         return false;
+    if (m_playbackThread.joinable())
+        m_playbackThread.join();
     m_playbackThread = std::thread(&SoundtrackManager::threadPlayTrack, this);
     return true;
 }
@@ -67,6 +75,8 @@ bool SoundtrackManager::stopTrack()
     if (!isTrackPlaying())
         return false;
     m_isTrackPlaying = false;
+    if (m_playbackThread.joinable())
+        m_playbackThread.join();
     return true;
 }
 
@@ -103,9 +113,16 @@ bool SoundtrackManager::threadPlayTrack()
         m_trackStream.ignore(44);
         while (m_isTrackPlaying && m_trackStream.read(buffer, sizeof(buffer)))
             pa_simple_write(stream.get(), buffer, sizeof(buffer), nullptr);
-        // Reset EOF state and go back to the start of the stream (loop)
-        m_trackStream.clear();
-        m_trackStream.seekg(0, std::ios::beg);
+
+        if (!m_trackQueue.empty()) {
+            // Load next track
+            m_trackQueueIndex = (m_trackQueueIndex + 1) % m_trackQueue.size();
+            loadTrack(m_trackQueue[m_trackQueueIndex]);
+        } else {
+            // Reset stream and loop
+            m_trackStream.clear();
+            m_trackStream.seekg(0, std::ios::beg);
+        }
     }
     m_trackStreamLock.unlock();
 
