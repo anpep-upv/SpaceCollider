@@ -42,9 +42,6 @@ struct SoundtrackManager {
     bool playNextTrack();
     bool stopTrack();
 
-    bool skipNextTrack();
-    bool skipPreviousTrack();
-
 private:
     SoundtrackManager() { }
 
