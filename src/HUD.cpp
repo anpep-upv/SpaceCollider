@@ -22,7 +22,7 @@ void HUD::renderBar(unsigned int index, const std::string& label, float value)
 {
     glPushMatrix();
     {
-        glTranslatef(2.0f, 0.5f * index - 0.25f, 0.0f);
+        glTranslatef(2.0f, 0.5f * index - 0.75f, 0.0f);
 
         // Render bar label
         glPushMatrix();
