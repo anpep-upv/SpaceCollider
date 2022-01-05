@@ -52,7 +52,7 @@ static bool g_isSkyboxVisible = true;
 static bool g_isMSAAEnabled = true;
 static bool g_isConsoleVisible = true;
 static bool g_isMotionBlurEnabled = false;
-static bool g_isNightModeEnabled = false;
+static bool g_isNightModeEnabled = true;
 static bool g_isWireframeViewEnabled = false;
 
 static void initSkybox()

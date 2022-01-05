@@ -29,7 +29,8 @@ void Player::update(const float dt)
             m_velocity = k_maxVelocity;
         else
             m_velocity += k_acceleration * dt;
-    } else if (isEngineOn()) {
+    }
+    else if (isEngineOn()) {
         if (m_velocity > 0)
             m_velocity -= k_acceleration * dt;
         else
@@ -48,7 +49,8 @@ void Player::update(const float dt)
             m_turnLeftVelocity = k_maxTurnVelocity;
         else
             m_turnLeftVelocity += k_turnAcceleration * dt;
-    } else {
+    }
+    else {
         if (m_turnLeftVelocity > 0)
             m_turnLeftVelocity -= k_turnAcceleration * dt;
         else
@@ -60,7 +62,8 @@ void Player::update(const float dt)
             m_turnRightVelocity = k_maxTurnVelocity;
         else
             m_turnRightVelocity += k_turnAcceleration * dt;
-    } else {
+    }
+    else {
         if (m_turnRightVelocity > 0)
             m_turnRightVelocity -= k_turnAcceleration * dt;
         else
@@ -91,7 +94,8 @@ void Player::update(const float dt)
         m_directionYaw = 90 - atan2f(m_direction.z, m_direction.x) * 180.0f / Util::k_pi;
         // Consume fuel (forward thrusters + left/right turn thrusters)
         m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
-    } else {
+    }
+    else {
         // Engine is off! Spin endlessly due to the abscence of gravity
         m_thrustPitchAngle += m_velocity * dt;
         m_fuel = 0;
@@ -101,10 +105,10 @@ void Player::update(const float dt)
     m_hud.updateSpeed(m_velocity, k_maxVelocity);
 
     const float relativeVelocity = m_velocity / k_maxVelocity;
-    auto &thrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13");
-    auto &turnedOffThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13"),
-         &turnedOnThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13_additive");
-    
+    auto& thrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13");
+    auto& turnedOffThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13"),
+        & turnedOnThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13_additive");
+
     turnedOnThrusterMaterial.isVisible = m_isThrusting;
     turnedOffThrusterMaterial.isVisible = !m_isThrusting;
 
@@ -131,7 +135,8 @@ void Player::updateCamera()
         if (m_isBirdViewActive) {
             m_cameraPosition = m_position + Vec3<float> { 0, 50, 50 };
             m_centerPosition = m_position;
-        } else {
+        }
+        else {
             m_cameraPosition = m_position - (m_direction * Vec3<float> { 10, 10, 10 });
             m_centerPosition = m_position - (m_direction * Vec3<float> { 0, 0, 0 });
         }
@@ -142,20 +147,19 @@ void Player::updateCamera()
 
 void Player::render() const
 {
-
-#if 0
     glPushMatrix();
     {
         // GNN matrix
-        static Model cameraModel { "data/MEDISM/MEDISM.obj" };
+        // TODO: create own class with update() and render() methods
+        static Model cameraModel{ "data/MEDISM/MEDISM.obj", {}, Vec3(0.001f) };
         static int offsetYCounter = 0;
         offsetYCounter++;
-        const Vec3<double> shipPosition { m_position.x, m_position.y + 10, m_position.z + 40.0 };
-        glTranslatef(shipPosition.x, shipPosition.y + 0.25 * sin(static_cast<double>(offsetYCounter) / 25.0), shipPosition.z);
+        const Vec3 shipPosition{ m_position.x, m_position.y + 10.0f, m_position.z + 40.0f };
+        glTranslatef(shipPosition.x, shipPosition.y + 0.3333f * sin(offsetYCounter / 25.0f), shipPosition.z);
         glRotatef(180, 0, 1, 0);
         glRotatef(20, 1, 0, 1);
 
-        cameraModel.render(0.001f);
+        cameraModel.render();
 
         static bool cameraIndicatorVisible = true;
         static int cameraIndicatorFrame = 0;
@@ -167,7 +171,7 @@ void Player::render() const
         if (cameraIndicatorVisible) {
             glPushMatrix();
             {
-                static float color[4] { 1, 0, 0, 1 };
+                static float color[4]{ 1, 0, 0, 1 };
                 glMaterialfv(GL_FRONT, GL_AMBIENT, color);
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, color);
                 glMaterialfv(GL_FRONT, GL_EMISSION, color);
@@ -180,7 +184,6 @@ void Player::render() const
 
         glPopMatrix();
     }
-#endif
 
     glPushMatrix();
     {
@@ -212,6 +215,40 @@ void Player::render() const
             glRotatef(m_turnRollAngle, 0, 0, 1);
             glTranslatef(-3, 1, 0);
             m_hud.render();
+            glPopMatrix();
+        }
+    }
+
+    if (m_isBirdViewActive) {
+        glPushMatrix();
+        {
+            // Scene axis matrix
+            constexpr float xAxisColor[]{ 1, 0, 0, 1 };
+            constexpr float yAxisColor[]{ 0, 1, 0, 1 };
+            constexpr float zAxisColor[]{ 0, 0, 1, 1 };
+
+            glTranslatef(m_position.x, m_position.y, m_position.z);
+            glBegin(GL_LINES);
+            {
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, xAxisColor);
+                glVertex3f(0, 0, 0);
+                glVertex3f(5, 0, 0);
+                glEnd();
+            }
+            glBegin(GL_LINES);
+            {
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, yAxisColor);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0, 5, 0);
+                glEnd();
+            }
+            glBegin(GL_LINES);
+            {
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, zAxisColor);
+                glVertex3f(0, 0, 0);
+                glVertex3f(0, 0, 5);
+                glEnd();
+            }
             glPopMatrix();
         }
     }
