@@ -25,7 +25,6 @@ Model::Model(const std::string& rawPath, const Vec3<float>& position, const Vec3
     , m_scale(scale)
     , m_rotationAngle(rotationAngle)
     , m_rotationAxis(rotationAxis)
-    , m_mtlCollection(nullptr)
 {
     // Resolve absolute path
     m_parentPath = std::filesystem::absolute({ rawPath }).parent_path();

@@ -195,6 +195,7 @@
     <ClCompile Include="src\Keymap.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\Mothership.cpp" />
     <ClCompile Include="src\MtlCollection.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\SoundtrackManager.cpp" />
@@ -226,7 +227,7 @@
     <ClInclude Include="include\HUD.hpp" />
     <ClInclude Include="include\Keymap.hpp" />
     <ClInclude Include="include\Light.hpp" />
-    <ClInclude Include="include\MothershipModel.hpp" />
+    <ClInclude Include="include\Mothership.hpp" />
     <ClInclude Include="include\PlatformQuirks.hpp" />
     <ClInclude Include="include\SoundtrackManager.hpp" />
     <ClInclude Include="include\Tunnel.hpp" />

@@ -20,14 +20,21 @@
 #include <Model.hpp>
 #include <Vec3.hpp>
 
-struct MothershipModel : public Model {
-    MothershipModel()
-        : Model("data/EMPFLT/EMPFLT.obj", Vec3(400.0f, 0.0f, 100.0f), Vec3(0.01f))
+struct Mothership {
+    explicit Mothership(const Vec3<float>& position);
+
+    void update(float dt);
+    void render() const;
+
+private:
+    Vec3<float> m_position;
+
+    static Model& getModel()
     {
+        if (!s_mothershipModel)
+            s_mothershipModel = new Model("data/EMPFLT/EMPFLT.obj", Vec3(400.0f, 0.0f, 100.0f), Vec3(0.01f));
+        return *s_mothershipModel;
     }
 
-    void update(float dt)
-    {
-        m_position.z += 45 * dt;
-    }
+    static Model *s_mothershipModel;
 };

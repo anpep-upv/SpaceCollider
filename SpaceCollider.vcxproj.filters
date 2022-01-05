@@ -63,6 +63,9 @@
     <ClCompile Include="src\Beacon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mothership.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Util.hpp">
@@ -146,7 +149,7 @@
     <ClInclude Include="include\Light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MothershipModel.hpp">
+    <ClInclude Include="include\Mothership.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PlatformQuirks.hpp">

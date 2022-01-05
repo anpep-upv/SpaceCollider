@@ -18,7 +18,7 @@
 #include <algorithm>
 
 #include <Keymap.hpp>
-#include <MothershipModel.hpp>
+#include <Mothership.hpp>
 #include <PlatformQuirks.hpp>
 #include <GL/freeglut.h>
 #include <Player.hpp>
@@ -42,7 +42,7 @@ static struct {
 
     Player* player;
     Model* skybox;
-    MothershipModel* mothership;
+    Mothership* mothership;
     Tunnel* tunnel;
 } g_scene;
 
@@ -58,11 +58,11 @@ static bool g_isWireframeViewEnabled = false;
 static void initSkybox()
 {
     g_scene.skybox = new Model("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
-
-    if (g_isNightModeEnabled)
-        g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox0.png");
+    
+    /*if (g_isNightModeEnabled)
+        g_scene.skybox->getMaterialCollection().getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox0.png");
     else
-        g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox4.png");
+        g_scene.skybox->getMaterialCollection().getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox4.png");*/
 }
 
 static void initScene()
@@ -73,7 +73,7 @@ static void initScene()
 
     g_scene.player = new Player();
     initSkybox();
-    g_scene.mothership = new MothershipModel();
+    g_scene.mothership = new Mothership(Vec3(400.0f, 0.0f, 100.0f));
     g_scene.tunnel = new Tunnel();
 
     for (const auto& entry : std::filesystem::directory_iterator("data/soundtrack")) {
@@ -88,6 +88,7 @@ static void initScene()
 
 static void destroyScene()
 {
+    return;
     SoundtrackManager::the().stopTrack();
     g_scene.isInitialized = false;
     delete g_scene.tunnel;

@@ -17,7 +17,7 @@
 
 #include <Beacon.hpp>
 
-std::shared_ptr<Model> Beacon::s_beaconModel;
+Model* Beacon::s_beaconModel = nullptr;
 
 Beacon::Beacon(const Vec3<float>& position)
     : m_position(position)

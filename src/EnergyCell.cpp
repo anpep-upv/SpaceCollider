@@ -17,7 +17,7 @@
 
 #include <EnergyCell.hpp>
 
-std::shared_ptr<Model> EnergyCell::s_boxModel;
+Model* EnergyCell::s_boxModel = nullptr;
 
 EnergyCell::EnergyCell(const Vec3<float>& position)
     : m_position(position)

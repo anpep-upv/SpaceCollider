@@ -22,6 +22,8 @@
 #include <Player.hpp>
 #include <Util.hpp>
 
+Model* Player::s_model = nullptr;
+
 void Player::update(const float dt)
 {
     if (m_isThrusting) {
@@ -93,7 +95,7 @@ void Player::update(const float dt)
         // Recalculate yaw in general direction
         m_directionYaw = 90 - atan2f(m_direction.z, m_direction.x) * 180.0f / Util::k_pi;
         // Consume fuel (forward thrusters + left/right turn thrusters)
-        m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
+        //m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
     }
     else {
         // Engine is off! Spin endlessly due to the abscence of gravity
@@ -105,9 +107,8 @@ void Player::update(const float dt)
     m_hud.updateSpeed(m_velocity, k_maxVelocity);
 
     const float relativeVelocity = m_velocity / k_maxVelocity;
-    auto& thrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13");
-    auto& turnedOffThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13"),
-        & turnedOnThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13_additive");
+    auto& turnedOffThrusterMaterial = getModel().getMaterialCollection()->getMaterial("tex_13"),
+        & turnedOnThrusterMaterial = getModel().getMaterialCollection()->getMaterial("tex_13_additive");
 
     turnedOnThrusterMaterial.isVisible = m_isThrusting;
     turnedOffThrusterMaterial.isVisible = !m_isThrusting;
@@ -197,7 +198,7 @@ void Player::render() const
         glRotatef(m_turnYawAngle, 0, 1, 0);
         glRotatef(m_turnRollAngle, 0, 0, 1);
 
-        m_model.render();
+        getModel().render();
         glPopMatrix();
     }
 

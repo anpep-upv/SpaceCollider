@@ -41,7 +41,8 @@ MtlCollection::MtlCollection(const std::string& rawPath)
             continue;
 
         if (keyword == "newmtl") {
-            assert(lineStream >> currentMaterialName);
+            lineStream >> currentMaterialName;
+            assert(!currentMaterialName.empty());
             m_collection[currentMaterialName] = std::make_unique<Material>(m_parentPath);
         } else if (k_keywordMap.count(keyword)) {
             // Obtain parameters

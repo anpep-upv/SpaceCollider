@@ -38,7 +38,7 @@ private:
     static Model &getModel()
     {
         if (!s_boxModel)
-            s_boxModel = std::make_shared<Model>("data/box/box2.obj", Vec3(), Vec3(1.5f));
+            s_boxModel = new Model("data/box/box2.obj", Vec3(), Vec3(1.5f));
         return *s_boxModel;
     }
 
@@ -49,5 +49,5 @@ private:
     int m_keyframe = 0;
     bool m_hasCollidedWithPlayer = false;
 
-    static std::shared_ptr<Model> s_boxModel;
+    static Model* s_boxModel;
 };

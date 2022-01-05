@@ -93,6 +93,13 @@ private:
     bool m_isHUDVisible = true;
     bool m_isBirdViewActive = false;
 
+    static Model& getModel()
+    {
+        if (!s_model)
+            s_model = new Model("data/PLAHB1/PLAHB1.obj", Vec3(), Vec3(0.001f));
+        return *s_model;
+    }
+
     // Player ship model
-    Model m_model { "data/PLAHB1/PLAHB1.obj", {}, Vec3(0.001f) };
+    static Model* s_model;
 };

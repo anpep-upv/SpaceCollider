@@ -84,7 +84,7 @@ bool SoundtrackManager::stopTrack()
 bool SoundtrackManager::threadPlayTrack()
 {
 #ifdef __linux__
-    const pa_sample_spec sampleSpec {
+    const pa_sample_spec sampleSpec{
         // These are fixed! We converted the soundtrack to single-channel 8KHz PCM U8
         // with the following command:
         //   ffmpeg -i soundtrack.mp3 -ac 1 -ar 8000 -acodec pcm_u8 soundtrack.wav
@@ -104,7 +104,7 @@ bool SoundtrackManager::threadPlayTrack()
         nullptr, // Default channel map
         nullptr, // Default buffering attributes
         nullptr // Don't store error code
-        ));
+    ));
     char buffer[1024];
 
     m_trackStreamLock.lock();
@@ -119,7 +119,8 @@ bool SoundtrackManager::threadPlayTrack()
             // Load next track
             m_trackQueueIndex = (m_trackQueueIndex + 1) % m_trackQueue.size();
             loadTrack(m_trackQueue[m_trackQueueIndex]);
-        } else {
+        }
+        else {
             // Reset stream and loop
             m_trackStream.clear();
             m_trackStream.seekg(0, std::ios::beg);
@@ -144,14 +145,18 @@ bool SoundtrackManager::threadPlayTrack()
         m_trackStream.ignore(44);
         while (m_isTrackPlaying && m_trackStream.read(buffer, sizeof(buffer))) {
             waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
-            while ((header.dwFlags & WHDR_DONE) != WHDR_DONE);
+            while ((header.dwFlags & WHDR_DONE) != WHDR_DONE) {
+                // HACK: Don't let MSVC++ optimize this busy wait loop away
+                __asm { nop }
+            }
         }
 
         if (!m_trackQueue.empty()) {
             // Load next track
             m_trackQueueIndex = (m_trackQueueIndex + 1) % m_trackQueue.size();
             loadTrack(m_trackQueue[m_trackQueueIndex]);
-        } else {
+        }
+        else {
             // Reset stream and loop
             m_trackStream.clear();
             m_trackStream.seekg(0, std::ios::beg);

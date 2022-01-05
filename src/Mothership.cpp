@@ -1,5 +1,5 @@
 // SpaceCollider -- SGI Lab Task 9
-// Copyright (c) 2021-2022 √Ångel P√©rez <aperpor@upv.edu.es>
+// Copyright (c) 2021-2022 ¡ngel PÈrez <aperpor@upv.edu.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,23 +15,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#pragma once
+#include <Mothership.hpp>
 
-#include <Model.hpp>
-#include <Vec3.hpp>
+Model* Mothership::s_mothershipModel = nullptr;
 
-struct Beacon {
-    explicit Beacon(const Vec3<float>& position);
-    void render() const;
-    
-private:
-    static Model& getModel()
+Mothership::Mothership(const Vec3<float>& position)
+    : m_position(position)
+{
+}
+
+void Mothership::update(float dt)
+{
+    m_position.z += 45 * dt;
+}
+
+void Mothership::render() const
+{
+    glPushMatrix();
     {
-        if (!s_beaconModel)
-            s_beaconModel = new Model("data/TBEACR/TBEACR.obj", Vec3(), Vec3(0.001f));
-        return *s_beaconModel;
+        glTranslatef(m_position.x, m_position.y, m_position.z);
+        getModel().render();
+        glPopMatrix();
     }
-
-    const Vec3<float> m_position;
-    static Model* s_beaconModel;
-};
+}
