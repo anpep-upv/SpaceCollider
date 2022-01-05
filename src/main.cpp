@@ -38,7 +38,7 @@ static int g_lastFrameTime = 0, g_lastFpsTime = 0;
 
 // Scene
 static struct {
-    bool isInitialized;
+    bool isInitialized = false;
 
     std::unique_ptr<Player> player;
     std::unique_ptr<Model> skybox;
@@ -52,6 +52,48 @@ static bool g_isSkyboxVisible = true;
 static bool g_isMSAAEnabled = true;
 static bool g_isConsoleVisible = true;
 static bool g_isMotionBlurEnabled = false;
+static bool g_isNightModeEnabled = false;
+
+
+static void initSkybox()
+{
+    g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
+
+    if (g_isNightModeEnabled)
+        g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox0.png");
+    else
+        g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox4.png");
+}
+
+static void initScene()
+{
+    glClearColor(0, 0, 0, 1);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+
+    g_scene.player = std::make_unique<Player>();
+    initSkybox();
+    g_scene.mothership = std::make_unique<MothershipModel>();
+    g_scene.tunnel = std::make_unique<Tunnel>();
+
+    for (const auto& entry : std::filesystem::directory_iterator("data/soundtrack")) {
+        if (!entry.is_regular_file() || entry.path().extension().string() != ".wav")
+            continue;
+        SoundtrackManager::the().enqueueTrack(entry.path().string());
+    }
+
+    // SoundtrackManager::the().playNextTrack();
+    g_scene.isInitialized = true;
+}
+
+static void destroyScene()
+{
+    SoundtrackManager::the().stopTrack();
+    g_scene.isInitialized = false;
+    g_scene.tunnel.reset();
+    g_scene.mothership.reset();
+    g_scene.player.reset();
+}
 
 static void updateFpsCounter()
 {
@@ -108,11 +150,32 @@ static void onDisplay()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    if (!g_isNightModeEnabled) {
+        constexpr float ambientColor[]{ 0.722f, 0.745f, 0.286f, 1.0f };
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+        glFogfv(GL_FOG_COLOR, ambientColor);
+    }
+    else {
+        constexpr float ambientColor[]{ 0.2f, 0.2f, 0.2f, 1.0f };
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+        glFogfv(GL_FOG_COLOR, ambientColor);
+    }
+
     // Multisample antialiasing
     if (g_isMSAAEnabled)
         glEnable(GL_MULTISAMPLE);
     else
         glDisable(GL_MULTISAMPLE);
+
+    // Fog
+    if (g_isFogEnabled) {
+        glEnable(GL_FOG);
+        glFogi(GL_FOG_MODE, GL_EXP2);
+        
+        glFogf(GL_FOG_DENSITY, 0.00075f);
+    } else {
+        glDisable(GL_FOG);
+    }
 
     // Camera control
     g_scene.player->updateCamera();
@@ -160,7 +223,10 @@ static void onKeyboard(const int up, const unsigned char key, const int x, const
         // TODO
         break;
     case Keymap::InputCommand::ToggleLightingMode:
-        // TODO
+        if (up) {
+            g_isNightModeEnabled = !g_isNightModeEnabled;
+            initSkybox();
+        }
         break;
     case Keymap::InputCommand::ToggleFog:
         if (up)
@@ -239,36 +305,6 @@ static void onSpecialKeyboardUp(const int key, const int x, const int y)
 static void onSpecialKeyboardDown(const int key, const int x, const int y)
 {
     onSpecialKeyboard(0, key, x, y);
-}
-
-static void initScene()
-{
-    glClearColor(0, 0, 0, 1);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-
-    g_scene.player = std::make_unique<Player>();
-    g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
-    g_scene.mothership = std::make_unique<MothershipModel>();
-    g_scene.tunnel = std::make_unique<Tunnel>();
-
-    for (const auto& entry : std::filesystem::directory_iterator("data/soundtrack")) {
-        if (!entry.is_regular_file() || entry.path().extension().string() != ".wav")
-            continue;
-        SoundtrackManager::the().enqueueTrack(entry.path().string());
-    }
-
-    // SoundtrackManager::the().playNextTrack();
-    g_scene.isInitialized = true;
-}
-
-static void destroyScene()
-{
-    SoundtrackManager::the().stopTrack();
-    g_scene.isInitialized = false;
-    g_scene.tunnel.reset();
-    g_scene.mothership.reset();
-    g_scene.player.reset();
 }
 
 int main(int argc, char** argv)

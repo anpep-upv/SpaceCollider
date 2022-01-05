@@ -101,6 +101,7 @@ void Player::update(const float dt)
     m_hud.updateSpeed(m_velocity, k_maxVelocity);
 
     const float relativeVelocity = m_velocity / k_maxVelocity;
+    auto &thrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13");
     auto &turnedOffThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13"),
          &turnedOnThrusterMaterial = m_model.getMaterialCollection()->getMaterial("tex_13_additive");
     
@@ -218,12 +219,7 @@ void Player::render() const
 #if 0
     // Fog
     if (m_isFogEnabled) {
-        glEnable(GL_FOG);
-        glFogi(GL_FOG_MODE, GL_EXP2);
-        glFogi(GL_FOG_START, k_near);
-        glFogi(GL_FOG_END, 0.75 * k_far);
-        glFogfv(GL_FOG_COLOR, m_fogColor);
-        glFogf(GL_FOG_DENSITY, 0.00075f);
+
     } else {
         glDisable(GL_FOG);
     }
