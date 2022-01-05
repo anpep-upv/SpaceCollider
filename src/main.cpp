@@ -82,7 +82,7 @@ static void initScene()
         SoundtrackManager::the().enqueueTrack(entry.path().string());
     }
 
-    // SoundtrackManager::the().playNextTrack();
+    SoundtrackManager::the().playNextTrack();
     g_scene.isInitialized = true;
 }
 

@@ -59,5 +59,5 @@ private:
     std::string m_trackName;
 
     std::vector<std::string> m_trackQueue;
-    unsigned int m_trackQueueIndex;
+    unsigned int m_trackQueueIndex = 0;
 };

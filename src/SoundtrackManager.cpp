@@ -31,9 +31,9 @@ struct PASimpleDeleter {
     }
 };
 using PASimpleWrapper = std::unique_ptr<pa_simple, PASimpleDeleter>;
-#elif defined(_WIN32)
 #endif
 
+#include <PlatformQuirks.hpp>
 #include <SoundtrackManager.hpp>
 
 SoundtrackManager* SoundtrackManager::s_instance;
@@ -126,9 +126,42 @@ bool SoundtrackManager::threadPlayTrack()
         }
     }
     m_trackStreamLock.unlock();
-
     return true;
 #elif defined(_WIN32)
+    char buffer[8000];
+
+    HWAVEOUT hWaveOut = 0;
+    WAVEFORMATEX wfx = { WAVE_FORMAT_PCM, 1, 8000, 8000, 1, 8, 0 };
+    WAVEHDR header = { buffer, sizeof(buffer), 0, 0, 0, 0, 0, 0 };
+
+    waveOutOpen(&hWaveOut, WAVE_MAPPER, &wfx, 0, 0, CALLBACK_NULL);
+    waveOutPrepareHeader(hWaveOut, &header, sizeof(WAVEHDR));
+
+    m_trackStreamLock.lock();
+    m_isTrackPlaying = true;
+    while (m_isTrackPlaying) {
+        // Ignore WAV header
+        m_trackStream.ignore(44);
+        while (m_isTrackPlaying && m_trackStream.read(buffer, sizeof(buffer))) {
+            // TODO: fix audio stutter!
+            waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
+            Sleep(1000);
+        }
+
+        if (!m_trackQueue.empty()) {
+            // Load next track
+            m_trackQueueIndex = (m_trackQueueIndex + 1) % m_trackQueue.size();
+            loadTrack(m_trackQueue[m_trackQueueIndex]);
+        } else {
+            // Reset stream and loop
+            m_trackStream.clear();
+            m_trackStream.seekg(0, std::ios::beg);
+        }
+    }
+    waveOutUnprepareHeader(hWaveOut, &header, sizeof(WAVEHDR));
+    waveOutClose(hWaveOut);
+    m_trackStreamLock.unlock();
+    return true;
 #endif
     return false;
 }
