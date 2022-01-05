@@ -87,7 +87,7 @@ private:
              const auto fullPath = model.m_parentPath / filePath;
 
              // Load and parse the material library
-             model.m_mtlCollection = std::make_unique<MtlCollection>(fullPath.generic_string());
+             model.m_mtlCollection = std::make_shared<MtlCollection>(fullPath.generic_string());
          } },
 
         // Use material

@@ -16,9 +16,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <Keymap.hpp>
+#include <PlatformQuirks.hpp>
 
 const std::map<unsigned char, Keymap::InputCommand> Keymap::m_keymap {
-#ifndef KEYMAP_CLASSIC
+#ifndef SGI_ASSIGNMENT
     // Modern style
     { 'w', InputCommand::Thrust },
     { 'a', InputCommand::TurnLeft },
@@ -42,7 +43,7 @@ const std::map<unsigned char, Keymap::InputCommand> Keymap::m_keymap {
     { KEY_TRANSLATION_UP, InputCommand::Thrust },
     { KEY_TRANSLATION_LEFT, InputCommand::TurnLeft },
     { KEY_TRANSLATION_DOWN, InputCommand::Brake },
-    { KEY_TRANSLATION_RIGHT, InputCommand::TurnRight }
+    { KEY_TRANSLATION_RIGHT, InputCommand::TurnRight },
 
     { 's', InputCommand::ToggleWireframeView },
     { 'l', InputCommand::ToggleLightingMode },

@@ -40,24 +40,24 @@ static int g_lastFrameTime = 0, g_lastFpsTime = 0;
 static struct {
     bool isInitialized = false;
 
-    std::unique_ptr<Player> player;
-    std::unique_ptr<Model> skybox;
-    std::unique_ptr<MothershipModel> mothership;
-    std::unique_ptr<Tunnel> tunnel;
+    Player* player;
+    Model* skybox;
+    MothershipModel* mothership;
+    Tunnel* tunnel;
 } g_scene;
 
 // Debug toggles
 static bool g_isFogEnabled = false;
 static bool g_isSkyboxVisible = true;
 static bool g_isMSAAEnabled = true;
-static bool g_isConsoleVisible = true;
+static bool g_isConsoleVisible = false;
 static bool g_isMotionBlurEnabled = false;
 static bool g_isNightModeEnabled = true;
 static bool g_isWireframeViewEnabled = false;
 
 static void initSkybox()
 {
-    g_scene.skybox = std::make_unique<Model>("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
+    g_scene.skybox = new Model("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
 
     if (g_isNightModeEnabled)
         g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox0.png");
@@ -71,10 +71,10 @@ static void initScene()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 
-    g_scene.player = std::make_unique<Player>();
+    g_scene.player = new Player();
     initSkybox();
-    g_scene.mothership = std::make_unique<MothershipModel>();
-    g_scene.tunnel = std::make_unique<Tunnel>();
+    g_scene.mothership = new MothershipModel();
+    g_scene.tunnel = new Tunnel();
 
     for (const auto& entry : std::filesystem::directory_iterator("data/soundtrack")) {
         if (!entry.is_regular_file() || entry.path().extension().string() != ".wav")
@@ -90,9 +90,9 @@ static void destroyScene()
 {
     SoundtrackManager::the().stopTrack();
     g_scene.isInitialized = false;
-    g_scene.tunnel.reset();
-    g_scene.mothership.reset();
-    g_scene.player.reset();
+    delete g_scene.tunnel;
+    delete g_scene.mothership;
+    delete g_scene.player;
 }
 
 static void updateFpsCounter()
@@ -316,8 +316,50 @@ static void onSpecialKeyboardDown(const int key, const int x, const int y)
     onSpecialKeyboard(0, key, x, y);
 }
 
+#ifdef SGI_ASSIGNMENT
+#include <iostream>
+
+static void displayInstructions()
+{
+#ifdef _WIN32
+    // See: https://stackoverflow.com/a/45622802
+    // Set console code page to UTF-8 so console known how to interpret string data
+    SetConsoleOutputCP(CP_UTF8);
+    // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
+    setvbuf(stdout, nullptr, _IOFBF, 1000);
+#endif
+
+    std::cout << "Práctica 9 (Videojuego) - Sistemas Gráficos Interactivos" << std::endl;
+    std::cout << "Autor: Ángel Pérez <aperpor@upv.edu.es>" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Control de la nave:" << std::endl;
+    std::cout << "  Flechas arriba/abajo:        Acelerar/frenar" << std::endl;
+    std::cout << "  Flechas izquierda/derecha:   Girar" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Opciones:" << std::endl;
+    std::cout << "  Vista alámbrica:     S" << std::endl;
+    std::cout << "  Modo diurno:         L" << std::endl;
+    std::cout << "  Activar niebla:      N" << std::endl;
+    std::cout << "  Ocultar indicadores: C" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Depuración/otros:" << std::endl;
+    std::cout << "  Vista de pájaro:     B" << std::endl;
+    std::cout << "  Ocultar cielo:       K" << std::endl;
+    std::cout << "  Mostrar telemetría:  O" << std::endl;
+    std::cout << "  Desenfoque movim.:   M" << std::endl;
+    std::cout << "  MSAA:                A" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Audio:" << std::endl;
+    std::cout << "  Desactivar música:   U" << std::endl;
+}
+#endif
+
 int main(int argc, char** argv)
 {
+#ifdef SGI_ASSIGNMENT
+    displayInstructions();
+#endif
+
     glutInit(&argc, argv);
     glutSetOption(GLUT_MULTISAMPLE, 8);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGBA | GLUT_ACCUM | GLUT_MULTISAMPLE);
@@ -331,7 +373,7 @@ int main(int argc, char** argv)
     glutKeyboardFunc(onKeyboardDown);
     glutKeyboardUpFunc(onKeyboardUp);
     glutSpecialFunc(onSpecialKeyboardDown);
-    glutSpecialFunc(onSpecialKeyboardUp);
+    glutSpecialUpFunc(onSpecialKeyboardUp);
 
     glutIgnoreKeyRepeat(true);
     glutTimerFunc(1000 / k_maxFps, onTimer, 0);

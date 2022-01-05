@@ -40,7 +40,7 @@ struct MtlCollection {
         float emissiveReflectivity[4] {};
 
         std::filesystem::path parentPath;
-        std::unique_ptr<Texture> texture;
+        std::shared_ptr<Texture> texture;
 
         Material() { }
 
@@ -57,7 +57,7 @@ struct MtlCollection {
     explicit MtlCollection(const std::string& rawPath);
     ~MtlCollection() = default;
 
-    std::map<std::string, std::unique_ptr<Material>>& getCollection()
+    std::map<std::string, std::shared_ptr<Material>>& getCollection()
     {
         return m_collection;
     }
@@ -72,7 +72,7 @@ private:
     // This is used to resolve absolute texture paths
     std::filesystem::path m_parentPath;
 
-    std::map<std::string, std::unique_ptr<Material>> m_collection;
+    std::map<std::string, std::shared_ptr<Material>> m_collection;
 
     // Parameter setting function type alias
     using SetParamFn = std::function<void(Material&, std::vector<std::string>)>;
@@ -125,7 +125,7 @@ private:
              const std::filesystem::path filePath { params[0] };
              const auto fullPath = material.parentPath / filePath;
 
-             material.texture = std::make_unique<Texture>(fullPath.generic_string());
+             material.texture = std::make_shared<Texture>(fullPath.generic_string());
          } }
     };
 };

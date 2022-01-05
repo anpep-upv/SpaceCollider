@@ -17,7 +17,7 @@
 
 #include <Beacon.hpp>
 
-std::shared_ptr<Model> Beacon::s_beaconModel = std::make_shared<Model>("data/TBEACR/TBEACR.obj", Vec3(), Vec3(0.001f));
+std::shared_ptr<Model> Beacon::s_beaconModel;
 
 Beacon::Beacon(const Vec3<float>& position)
     : m_position(position)
@@ -29,7 +29,7 @@ void Beacon::render() const
     glPushMatrix();
     {
         glTranslatef(m_position.x, m_position.y, m_position.z);
-        s_beaconModel->render();
+        getModel().render();
         glPopMatrix();
     }
 }
