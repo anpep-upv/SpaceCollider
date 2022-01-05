@@ -143,9 +143,8 @@ bool SoundtrackManager::threadPlayTrack()
         // Ignore WAV header
         m_trackStream.ignore(44);
         while (m_isTrackPlaying && m_trackStream.read(buffer, sizeof(buffer))) {
-            // TODO: fix audio stutter!
             waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
-            Sleep(1000);
+            while ((header.dwFlags & WHDR_DONE) != WHDR_DONE);
         }
 
         if (!m_trackQueue.empty()) {
