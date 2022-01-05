@@ -59,10 +59,10 @@ static void initSkybox()
 {
     g_scene.skybox = new Model("data/skybox/skybox.obj", Vec3(), Vec3(1500.0f));
     
-    /*if (g_isNightModeEnabled)
-        g_scene.skybox->getMaterialCollection().getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox0.png");
+    if (g_isNightModeEnabled)
+        g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox0.png");
     else
-        g_scene.skybox->getMaterialCollection().getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox4.png");*/
+        g_scene.skybox->getMaterialCollection()->getMaterial("Material").texture = std::make_unique<Texture>("data/skybox/skybox4.png");
 }
 
 static void initScene()
@@ -88,7 +88,6 @@ static void initScene()
 
 static void destroyScene()
 {
-    return;
     SoundtrackManager::the().stopTrack();
     g_scene.isInitialized = false;
     delete g_scene.tunnel;
