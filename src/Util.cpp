@@ -19,8 +19,8 @@
 #include <cstdio>
 #include <cstring>
 
-#include <GL/freeglut.h>
 #include <PlatformQuirks.hpp>
+#include <GL/freeglut.h>
 #include <Util.hpp>
 
 char Util::s_consoleBuffer[512] {}; // Console text buffer

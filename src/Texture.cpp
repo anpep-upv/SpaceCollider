@@ -17,6 +17,8 @@
 
 #include <cassert>
 
+#include <PlatformQuirks.hpp>
+#include <GL/freeglut.h>
 #include <FreeImage.h>
 #include <Texture.hpp>
 

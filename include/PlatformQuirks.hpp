@@ -17,6 +17,11 @@
 
 #pragma once
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <Windows.h>
+#endif
+
 // We could easily get rid of these by defining _CRT_SECURE_NO_WARNINGS but there's no harm in having these defined in macros
 #if !defined(_MSC_VER) && !defined(vsnprintf_s)
 #define vsnprintf_s(buf, bufsz, count, format, args) vsnprintf(buf, count, format, args)

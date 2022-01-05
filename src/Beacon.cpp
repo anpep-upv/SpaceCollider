@@ -1,5 +1,5 @@
 // SpaceCollider -- SGI Lab Task 9
-// Copyright (c) 2021-2022 √Ångel P√©rez <aperpor@upv.edu.es>
+// Copyright (c) 2021-2022 ¡ngel PÈrez <aperpor@upv.edu.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,35 +15,21 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include <EnergyCell.hpp>
+#include <Beacon.hpp>
 
-std::shared_ptr<Model> EnergyCell::s_boxModel;
+std::shared_ptr<Model> Beacon::s_beaconModel = std::make_shared<Model>("data/TBEACR/TBEACR.obj", Vec3(), Vec3(0.001f));
 
-EnergyCell::EnergyCell(const Vec3<float>& position)
+Beacon::Beacon(const Vec3<float>& position)
     : m_position(position)
 {
 }
 
-void EnergyCell::update(float dt, const Player& player)
-{
-    m_keyframe = (m_keyframe + static_cast<int>(350 * dt)) % 360;
-
-    if (const auto distance = (m_position - player.getPosition()).magnitude();
-        distance < 5) {
-        // Player collided with this energy cell
-        m_hasCollidedWithPlayer = true;
-        if (m_callback)
-            m_callback(*this);
-    }
-}
-
-void EnergyCell::render() const
+void Beacon::render() const
 {
     glPushMatrix();
     {
         glTranslatef(m_position.x, m_position.y, m_position.z);
-        glRotatef(m_keyframe, 0, 1, 1);
-        getModel().render();
+        s_beaconModel->render();
         glPopMatrix();
     }
 }

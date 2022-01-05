@@ -15,10 +15,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include <GL/freeglut.h>
+#include <algorithm>
+
 #include <Keymap.hpp>
 #include <MothershipModel.hpp>
 #include <PlatformQuirks.hpp>
+#include <GL/freeglut.h>
 #include <Player.hpp>
 #include <SoundtrackManager.hpp>
 #include <Tunnel.hpp>

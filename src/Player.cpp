@@ -15,8 +15,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-#include <cmath>
 
+#include <PlatformQuirks.hpp>
 #include <GL/freeglut.h>
 #include <Keymap.hpp>
 #include <Player.hpp>
@@ -90,7 +90,7 @@ void Player::update(const float dt)
         // Recalculate yaw in general direction
         m_directionYaw = 90 - atan2f(m_direction.z, m_direction.x) * 180.0f / Util::k_pi;
         // Consume fuel (forward thrusters + left/right turn thrusters)
-        m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
+        //m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
     } else {
         // Engine is off! Spin endlessly due to the abscence of gravity
         m_thrustPitchAngle += m_velocity * dt;

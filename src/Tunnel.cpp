@@ -41,9 +41,9 @@ void Tunnel::update(float dt, Player& player)
             // Spawn two beacons
             auto position = trajectory(m_endChunk);
             position.x -= k_tunnelRadius + 2;
-            m_beacons.push_back(std::make_unique<BeaconModel>(position));
+            m_beacons.push_back(std::make_unique<Beacon>(position));
             position.x += 2 * (k_tunnelRadius + 2);
-            m_beacons.push_back(std::make_unique<BeaconModel>(position));
+            m_beacons.push_back(std::make_unique<Beacon>(position));
         }
 
         if (m_endChunk % k_lightPeriod == 0) {
@@ -71,11 +71,10 @@ void Tunnel::update(float dt, Player& player)
             energyCell.reset();
     }
 
-    for (auto& light : m_lights)
+    for (const auto& light : m_lights)
         light->update(dt);
 
     m_energyCells.erase(std::remove(begin(m_energyCells), end(m_energyCells), nullptr), end(m_energyCells));
-
     m_playerPosition = player.getPosition();
 }
 
@@ -83,6 +82,9 @@ void Tunnel::render() const
 {
     for (const auto& beacon : m_beacons)
         beacon->render();
+
+    for (const auto& energyCell : m_energyCells)
+        energyCell->render();
 
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT);
     glDepthMask(GL_FALSE);
@@ -94,18 +96,18 @@ void Tunnel::render() const
         float alpha = 0.6666f * abs(sin(thread * 64));
         const auto theta = Util::k_tau * (thread / static_cast<float>(k_lightThreads));
         const auto dx = k_tunnelRadius * cos(theta),
-                   dy = k_tunnelRadius * sin(theta);
+            dy = k_tunnelRadius * sin(theta);
 
         glLineWidth(3.0f);
         glBegin(GL_LINE_STRIP);
         for (unsigned int chunk = m_startChunk; chunk <= m_endChunk; chunk++) {
             const auto position = trajectory(chunk);
 
-            if (chunk >= m_nearestChunk + 50)
-                alpha -= 0.025f;
+            if (chunk >= m_nearestChunk + 200)
+                alpha -= 0.0125f;
 
-            float diffuseColor[] { 1, 0, 0, alpha };
-            float emissionColor[] { 1, 0, 0, 1 };
+            float diffuseColor[]{ 1, 0, 0, alpha };
+            float emissionColor[]{ 1, 0, 0, 1 };
 
             if (thread == 3 * k_lightThreads / 4) {
                 float intensity = 0;
@@ -132,9 +134,6 @@ void Tunnel::render() const
 
     renderBottomLight();
 
-    for (const auto& energyCell : m_energyCells)
-        energyCell->render();
-
     bool isAnyEnabled = false;
     for (const auto& light : m_lights) {
         light->render();
@@ -148,21 +147,22 @@ void Tunnel::render() const
 
 void Tunnel::renderBottomLight() const
 {
-    const float lightAmbient[4] { 0, 0, 0, 0 };
+    const float lightAmbient[4]{ 0, 0, 0, 0 };
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
 
-    const float lightPosition[4] { m_playerPosition.x, m_playerPosition.y - 2, m_playerPosition.z, 1 };
+    const float lightPosition[4]{ m_playerPosition.x, m_playerPosition.y - 5, m_playerPosition.z, 1 };
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-    const float lightColor[4] { 1, 0, 0, 1 };
+    const float lightColor[4]{ 1, 0, 0, 1 };
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
 
-    const float specularColor[4] { 1, 0, 0, 1 };
+    const float specularColor[4]{ 1, 0, 0, 1 };
     glLightfv(GL_LIGHT0, GL_SPECULAR, specularColor);
 
-    const float spotDirection[3] { 0, 1, 0 };
+    const float spotDirection[3]{ 0, 1, 0 };
     glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 90);
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotDirection);
+
     float x = pow(Util::k_e, m_distanceFromNearestChunk / (k_chunkLength));
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, x);
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, x);

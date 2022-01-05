@@ -20,7 +20,7 @@
 #include <cmath>
 #include <vector>
 
-#include <BeaconModel.hpp>
+#include <Beacon.hpp>
 #include <EnergyCell.hpp>
 #include <Light.hpp>
 #include <Player.hpp>
@@ -82,6 +82,6 @@ private:
     Vec3<float> m_playerPosition;
 
     std::vector<std::unique_ptr<EnergyCell>> m_energyCells;
-    std::vector<std::unique_ptr<BeaconModel>> m_beacons;
+    std::vector<std::unique_ptr<Beacon>> m_beacons;
     std::vector<std::unique_ptr<Light>> m_lights;
 };

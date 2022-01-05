@@ -20,7 +20,7 @@
 #include <Model.hpp>
 #include <Vec3.hpp>
 
-struct Light : public Model {
+struct Light : Model {
     explicit Light(const Vec3<float>& position, const Vec3<float>& direction, const Player& player)
         : Model("data/light_floor/light_floor.obj", position, Vec3(0.25f), 270, Vec3(1.0f, 0.0f, 0.0f))
         , m_directionYaw(90 - atan2(direction.z, direction.x) * 180 / Util::k_pi)
@@ -44,13 +44,11 @@ struct Light : public Model {
             glScalef(m_scale.x, m_scale.y, m_scale.z);
             glRotatef(m_rotationAngle, m_rotationAxis.x, m_rotationAxis.y, m_rotationAxis.z);
             glRotatef(m_directionYaw, 0, 0, 1);
-            Model::renderNoTransform();
+            renderNoTransform();
             glPopMatrix();
         }
 
         if (m_isLightEnabled) {
-            const float lightAmbient[4] { 0, 0, 0, 0 };
-            glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbient);
 
             const float lightPosition[4] { m_position.x, m_player.getPosition().y + 2, m_position.z, 1 };
             glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);

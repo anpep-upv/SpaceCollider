@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <HUD.hpp>
 #include <Model.hpp>
 #include <Vec3.hpp>

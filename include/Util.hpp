@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include <PlatformQuirks.hpp>
 #include <GL/freeglut.h>
 
 struct Util {

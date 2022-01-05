@@ -48,15 +48,16 @@ SoundtrackManager::~SoundtrackManager()
 bool SoundtrackManager::enqueueTrack(const std::string& path)
 {
     m_trackQueue.push_back(path);
+    return true;
 }
 
 bool SoundtrackManager::loadTrack(const std::string& path)
 {
-    std::filesystem::path fsPath(path);
+    const std::filesystem::path fsPath(path);
     if (m_trackStream.is_open())
         m_trackStream.close();
     m_trackStream.open(path, std::ifstream::binary);
-    m_trackName = fsPath.stem();
+    m_trackName = fsPath.stem().string();
     return !m_trackStream.fail();
 }
 

@@ -32,13 +32,22 @@ struct EnergyCell {
     void render() const;
 
     bool hasCollidedWithPlayer() const { return m_hasCollidedWithPlayer; }
-    void bindCollisionCallback(CallbackFn callback) { m_callback = callback; }
+    void bindCollisionCallback(const CallbackFn callback) { m_callback = callback; }
 
 private:
-    CallbackFn m_callback;
+    static Model &getModel()
+    {
+        if (!s_boxModel)
+            s_boxModel = std::make_shared<Model>("data/box/box2.obj", Vec3(), Vec3(1.5f));
+        return *s_boxModel;
+    }
 
-    int m_keyframe;
-    bool m_hasCollidedWithPlayer;
+    CallbackFn m_callback = nullptr;
 
-    Model m_boxModel { "data/box/box.obj", Vec3(), Vec3(1.5f) };
+    const Vec3<float> m_position;
+
+    int m_keyframe = 0;
+    bool m_hasCollidedWithPlayer = false;
+
+    static std::shared_ptr<Model> s_boxModel;
 };

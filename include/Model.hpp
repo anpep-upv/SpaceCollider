@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include <PlatformQuirks.hpp>
 #include <GL/freeglut.h>
 #include <MtlCollection.hpp>
 #include <Util.hpp>

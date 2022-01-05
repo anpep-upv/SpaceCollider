@@ -60,13 +60,13 @@ void Model::update(float dt) { }
 void Model::render() const
 {
     glPushMatrix();
-    glTranslatef(m_position.x, m_position.y, m_position.z);
-    glScalef(m_scale.x, m_scale.y, m_scale.z);
-    glRotatef(m_rotationAngle, m_rotationAxis.x, m_rotationAxis.y, m_rotationAxis.z);
-
-    renderNoTransform();
-
-    glPopMatrix();
+    {
+        glTranslatef(m_position.x, m_position.y, m_position.z);
+        glScalef(m_scale.x, m_scale.y, m_scale.z);
+        glRotatef(m_rotationAngle, m_rotationAxis.x, m_rotationAxis.y, m_rotationAxis.z);
+        renderNoTransform();
+        glPopMatrix();
+    }
 }
 
 void Model::renderNoTransform() const
@@ -78,8 +78,7 @@ void Model::renderNoTransform() const
     for (const auto& [_, material] : m_mtlCollection->getCollection()) {
         if (!material->isVisible)
             continue;
-
-        glMaterialf(GL_FRONT, GL_SHININESS, material->specularExponent);
+        
         glMaterialfv(GL_FRONT, GL_AMBIENT, material->ambientReflectivity);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, material->diffuseReflectivity);
         glMaterialfv(GL_FRONT, GL_SPECULAR, material->specularReflectivity);
@@ -100,8 +99,7 @@ void Model::renderNoTransform() const
         if (material->texture)
             material->texture->unbind();
     }
-
-    glDisable(GL_COLOR_MATERIAL);
+    
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);

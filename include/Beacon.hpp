@@ -20,9 +20,18 @@
 #include <Model.hpp>
 #include <Vec3.hpp>
 
-struct BeaconModel : public Model {
+/*struct BeaconModel : public Model {
     explicit BeaconModel(const Vec3<float>& position)
         : Model("data/TBEACR/TBEACR.obj", position, Vec3(0.001f), 90, Vec3(0.0f, 1.0f, 0.0f))
     {
     }
+};*/
+
+struct Beacon {
+    explicit Beacon(const Vec3<float>& position);
+    void render() const;
+    
+private:
+    const Vec3<float> m_position;
+    static std::shared_ptr<Model> s_beaconModel;
 };
