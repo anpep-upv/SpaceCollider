@@ -53,7 +53,7 @@ static bool g_isMSAAEnabled = true;
 static bool g_isConsoleVisible = true;
 static bool g_isMotionBlurEnabled = false;
 static bool g_isNightModeEnabled = false;
-
+static bool g_isWireframeViewEnabled = false;
 
 static void initSkybox()
 {
@@ -129,6 +129,7 @@ static void onTimer(const int value)
 
     // Display state
     Util::consolePrint("DBUG");
+    Util::consolePrint("  \5VIW\1  %s\1", !g_isWireframeViewEnabled ? "\3TEX" : "\2WFR");
     Util::consolePrint("  \5FOG\1  %s\1", g_isFogEnabled ? "\3YES" : "\2NO");
     Util::consolePrint("  \5ACUM\1 %s\1", g_isMotionBlurEnabled ? "\3YES" : "\x02NO");
     Util::consolePrint("  \5MSAA\1 %s\1", g_isMSAAEnabled ? "\3YES" : "\2NO");
@@ -146,9 +147,16 @@ static void onDisplay()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    if (g_isWireframeViewEnabled) {
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        glEnable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     if (!g_isNightModeEnabled) {
         constexpr float ambientColor[]{ 0.722f, 0.745f, 0.286f, 1.0f };
@@ -220,7 +228,8 @@ static void onKeyboard(const int up, const unsigned char key, const int x, const
 
     switch (Keymap::the().at(key)) {
     case Keymap::InputCommand::ToggleWireframeView:
-        // TODO
+        if (up)
+            g_isWireframeViewEnabled = !g_isWireframeViewEnabled;
         break;
     case Keymap::InputCommand::ToggleLightingMode:
         if (up) {
