@@ -350,7 +350,7 @@ static void displayInstructions()
     std::cout << "  MSAA:                A" << std::endl;
     std::cout << std::endl;
     std::cout << "Audio:" << std::endl;
-    std::cout << "  Desactivar música:   U" << std::endl;
+    std::cout << "  Activar música:      U" << std::endl;
 }
 #endif
 

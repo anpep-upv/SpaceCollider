@@ -146,8 +146,14 @@ bool SoundtrackManager::threadPlayTrack()
         while (m_isTrackPlaying && m_trackStream.read(buffer, sizeof(buffer))) {
             waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
             while ((header.dwFlags & WHDR_DONE) != WHDR_DONE) {
+#ifdef DEBUG
                 // HACK: Don't let MSVC++ optimize this busy wait loop away
-                __asm { nop }
+                //__asm { nop }
+#else
+                // Don't hog CPU on busy wait
+                // TODO: implement double-buffering
+                Sleep(1000 / 60);
+#endif
             }
         }
 

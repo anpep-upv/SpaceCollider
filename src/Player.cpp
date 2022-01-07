@@ -95,7 +95,7 @@ void Player::update(const float dt)
         // Recalculate yaw in general direction
         m_directionYaw = 90 - atan2f(m_direction.z, m_direction.x) * 180.0f / Util::k_pi;
         // Consume fuel (forward thrusters + left/right turn thrusters)
-        //m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
+        m_fuel -= (m_velocity + m_turnLeftVelocity + m_turnRightVelocity) * k_fuelConsumptionUnit;
     }
     else {
         // Engine is off! Spin endlessly due to the abscence of gravity

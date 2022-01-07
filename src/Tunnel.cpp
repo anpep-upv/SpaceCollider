@@ -19,57 +19,60 @@
 
 void Tunnel::update(float dt, Player& player)
 {
-    Util::consolePrint("ENDD %f", (player.getPosition() - trajectory(m_endChunk)).magnitude());
+    if (player.isEngineOn()) {
+        m_nearestChunk = chunkFromPosition(player.getPosition());
+        m_distanceFromNearestChunk = (player.getPosition() - trajectory(m_nearestChunk)).magnitude();
 
-    m_nearestChunk = chunkFromPosition(player.getPosition());
-    m_distanceFromNearestChunk = (player.getPosition() - trajectory(m_nearestChunk)).magnitude();
+        if (const auto distanceFromEnd = (player.getPosition() - trajectory(m_endChunk)).magnitude();
+            distanceFromEnd < k_minGenDistance) {
+            // Player is approaching the end of the tunnel
+            m_endChunk++; // Render more chunks
 
-    if (const auto distanceFromEnd = (player.getPosition() - trajectory(m_endChunk)).magnitude();
-        distanceFromEnd < k_minGenDistance) {
-        // Player is approaching the end of the tunnel
-        m_endChunk++; // Render more chunks
+            if (m_endChunk % k_energyCellPeriod == 0) {
+                // Spawn a new energy cell
+                m_energyCells.push_back(std::make_unique<EnergyCell>(trajectory(m_endChunk)));
+                m_energyCells[m_energyCells.size() - 1]->bindCollisionCallback([&player](const auto&) {
+                    player.rechargeFuel();
+                    });
+            }
 
-        if (m_endChunk % k_energyCellPeriod == 0) {
-            // Spawn a new energy cell
-            m_energyCells.push_back(std::make_unique<EnergyCell>(trajectory(m_endChunk)));
-            m_energyCells[m_energyCells.size() - 1]->bindCollisionCallback([&player](const auto&) {
-                player.rechargeFuel();
-            });
+            if (m_endChunk % k_beaconPeriod == 0) {
+                // Spawn two beacons
+                auto position = trajectory(m_endChunk);
+                position.x -= k_tunnelRadius + 2;
+                m_beacons.push_back(std::make_unique<Beacon>(position));
+                position.x += 2 * (k_tunnelRadius + 2);
+                m_beacons.push_back(std::make_unique<Beacon>(position));
+            }
+
+            if (m_endChunk % k_lightPeriod == 0) {
+                // Spawn a light
+                auto position = trajectory(m_endChunk);
+                position.y += 15;
+
+                auto direction = (position - trajectory(m_endChunk - 1)).normalized();
+                m_lights.push_back(std::make_unique<Light>(position, direction, player));
+            }
+
+            if ((m_endChunk - m_startChunk) > k_maxChunks)
+                m_startChunk++;
         }
 
-        if (m_endChunk % k_beaconPeriod == 0) {
-            // Spawn two beacons
-            auto position = trajectory(m_endChunk);
-            position.x -= k_tunnelRadius + 2;
-            m_beacons.push_back(std::make_unique<Beacon>(position));
-            position.x += 2 * (k_tunnelRadius + 2);
-            m_beacons.push_back(std::make_unique<Beacon>(position));
+        if (const auto distanceFromStart = (player.getPosition() - trajectory(m_startChunk)).magnitude();
+            distanceFromStart < k_minGenDistance && (m_endChunk - m_startChunk) > k_minChunks) {
+            // Player is approaching the start of the tunnel
+            m_endChunk--; // Render more chunks
         }
-
-        if (m_endChunk % k_lightPeriod == 0) {
-            // Spawn a light
-            auto position = trajectory(m_endChunk);
-            position.y += 15;
-
-            auto direction = (position - trajectory(m_endChunk - 1)).normalized();
-            m_lights.push_back(std::make_unique<Light>(position, direction, player));
-        }
-
-        if ((m_endChunk - m_startChunk) > k_maxChunks)
-            m_startChunk++;
-    }
-
-    if (const auto distanceFromStart = (player.getPosition() - trajectory(m_startChunk)).magnitude();
-        distanceFromStart < k_minGenDistance && (m_endChunk - m_startChunk) > k_minChunks) {
-        // Player is approaching the start of the tunnel
-        m_endChunk--; // Render more chunks
     }
 
     for (auto& energyCell : m_energyCells) {
         energyCell->update(dt, player);
-        if (energyCell->hasCollidedWithPlayer())
+        if (player.isEngineOn() && energyCell->hasCollidedWithPlayer())
             energyCell.reset();
     }
+
+    if (!player.isEngineOn())
+        return;
 
     for (const auto& light : m_lights)
         light->update(dt);
@@ -93,18 +96,19 @@ void Tunnel::render() const
 
     // Render light threads for every chunk of the tunnel
     for (unsigned int thread = 0; thread < k_lightThreads; thread++) {
-        float alpha = 0.6666f * abs(sin(thread * 64));
-        const auto theta = Util::k_tau * (thread / static_cast<float>(k_lightThreads));
+        float alpha = 0.66f * fabsf(sin(thread * 64));
+        const auto theta = Util::k_tau * (static_cast<float>(thread) / static_cast<float>(k_lightThreads));
         const auto dx = k_tunnelRadius * cos(theta),
             dy = k_tunnelRadius * sin(theta);
 
+        
         glLineWidth(3.0f);
         glBegin(GL_LINE_STRIP);
         for (unsigned int chunk = m_startChunk; chunk <= m_endChunk; chunk++) {
-            const auto position = trajectory(chunk);
-
             if (chunk >= m_nearestChunk + 200)
                 alpha -= 0.0125f;
+            else if (chunk + 5 <= m_nearestChunk)
+                continue;
 
             float diffuseColor[]{ 1, 0, 0, alpha };
             float emissionColor[]{ 1, 0, 0, 1 };
@@ -115,6 +119,7 @@ void Tunnel::render() const
                     // White stripe
                     intensity = 1;
                 }
+
                 diffuseColor[0] = diffuseColor[1] = diffuseColor[2] = diffuseColor[3] = intensity * alpha;
                 emissionColor[0] = emissionColor[1] = emissionColor[2] = emissionColor[3] = intensity * alpha;
             }
@@ -123,6 +128,7 @@ void Tunnel::render() const
             glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor);
             glMaterialfv(GL_FRONT, GL_EMISSION, emissionColor);
 
+            const auto position = trajectory(chunk);
             glVertex3f(dx + position.x, dy + position.y, position.z);
         }
         glEnd();
