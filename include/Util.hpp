@@ -23,7 +23,7 @@
 #include <vector>
 
 #include <PlatformQuirks.hpp>
-#include <GL/freeglut.h>
+#include <PlatformGraphics.h>
 
 struct Util {
     static void consolePrint(const char* format, ...);

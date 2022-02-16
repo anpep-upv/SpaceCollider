@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <GL/freeglut.h>
+#include <PlatformGraphics.h>
 
 using TextureId = GLuint;
 

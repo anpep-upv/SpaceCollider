@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <PlatformQuirks.hpp>
-#include <GL/freeglut.h>
+#include <PlatformGraphics.h>
 #include <HUD.hpp>
 
 void HUD::renderBar(unsigned int index, const std::string& label, float value)

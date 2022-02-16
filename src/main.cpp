@@ -20,7 +20,7 @@
 #include <Keymap.hpp>
 #include <Mothership.hpp>
 #include <PlatformQuirks.hpp>
-#include <GL/freeglut.h>
+#include <PlatformGraphics.h>
 #include <Player.hpp>
 #include <SoundtrackManager.hpp>
 #include <Tunnel.hpp>
@@ -361,7 +361,10 @@ int main(int argc, char** argv)
 #endif
 
     glutInit(&argc, argv);
+#ifndef __APPLE__
     glutSetOption(GLUT_MULTISAMPLE, 8);
+#endif
+
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGBA | GLUT_ACCUM | GLUT_MULTISAMPLE);
     glutInitWindowSize(g_viewportWidth, g_viewportHeight);
     glutCreateWindow("SpaceCollider");

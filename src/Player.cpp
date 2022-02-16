@@ -17,7 +17,7 @@
 
 
 #include <PlatformQuirks.hpp>
-#include <GL/freeglut.h>
+#include <PlatformGraphics.h>
 #include <Keymap.hpp>
 #include <Player.hpp>
 #include <Util.hpp>

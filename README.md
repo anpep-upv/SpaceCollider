@@ -13,12 +13,16 @@
 - A recent `g++` version with C++20 support
 - GNU `make`
 
+### macOS
+- Xcode Build Tools
+- `freeimage` from Homebrew (`brew install freeimage`)
+
 ### Windows
 - Microsoft Visual Studio 2019 or later
 - Clone the repository with `--recursive` flag so the required `codebase` directory is downloaded.
 
 ## Build instructions
-### GNU/Linux
+### GNU/Linux and macOS
 ```
 # Clone the repository
 git clone https://github.com/anpep/SpaceCollider

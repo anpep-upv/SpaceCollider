@@ -24,7 +24,7 @@
 #include <vector>
 
 #include <PlatformQuirks.hpp>
-#include <GL/freeglut.h>
+#include <PlatformGraphics.h>
 #include <MtlCollection.hpp>
 #include <Util.hpp>
 #include <Vec2.hpp>
