@@ -38,6 +38,7 @@ struct Light : Model {
 
     void render() const override
     {
+#ifndef __APPLE__
         glPushMatrix();
         {
             glTranslatef(m_position.x, m_position.y, m_position.z);
@@ -70,6 +71,7 @@ struct Light : Model {
 
             glEnable(GL_LIGHT1);
         }
+#endif
     }
 
 private:

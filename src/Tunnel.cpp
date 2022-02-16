@@ -138,7 +138,9 @@ void Tunnel::render() const
     glDepthMask(GL_TRUE);
     glPopAttrib();
 
+#ifndef __APPLE__
     renderBottomLight();
+#endif
 
     bool isAnyEnabled = false;
     for (const auto& light : m_lights) {
