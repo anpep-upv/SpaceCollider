@@ -208,7 +208,6 @@
     <ClCompile Include="src\Mothership.cpp" />
     <ClCompile Include="src\MtlCollection.cpp" />
     <ClCompile Include="src\Player.cpp" />
-    <ClCompile Include="src\SoundtrackManager.cpp" />
     <ClCompile Include="src\Tunnel.cpp" />
     <ClCompile Include="src\Util.cpp" />
     <ClCompile Include="src\Texture.cpp" />
@@ -239,7 +238,6 @@
     <ClInclude Include="include\Light.hpp" />
     <ClInclude Include="include\Mothership.hpp" />
     <ClInclude Include="include\PlatformQuirks.hpp" />
-    <ClInclude Include="include\SoundtrackManager.hpp" />
     <ClInclude Include="include\Tunnel.hpp" />
     <ClInclude Include="include\Util.hpp" />
     <ClInclude Include="include\Vec2.hpp" />

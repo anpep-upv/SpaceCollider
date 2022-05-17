@@ -22,7 +22,6 @@
 #include <PlatformQuirks.hpp>
 #include <PlatformGraphics.h>
 #include <Player.hpp>
-#include <SoundtrackManager.hpp>
 #include <Tunnel.hpp>
 #include <Util.hpp>
 
@@ -76,19 +75,11 @@ static void initScene()
     g_scene.mothership = new Mothership(Vec3(400.0f, 0.0f, 100.0f));
     g_scene.tunnel = new Tunnel();
 
-    for (const auto& entry : std::filesystem::directory_iterator("data/soundtrack")) {
-        if (!entry.is_regular_file() || entry.path().extension().string() != ".wav")
-            continue;
-        SoundtrackManager::the().enqueueTrack(entry.path().string());
-    }
-
-    SoundtrackManager::the().playNextTrack();
     g_scene.isInitialized = true;
 }
 
 static void destroyScene()
 {
-    SoundtrackManager::the().stopTrack();
     g_scene.isInitialized = false;
     delete g_scene.tunnel;
     delete g_scene.mothership;
@@ -199,9 +190,6 @@ static void onDisplay()
     if (g_isConsoleVisible)
         Util::renderOverlayString(Util::s_consoleBuffer, Util::k_consoleFontSize + 1, Util::k_consoleFontSize * Util::s_consoleLines - 1);
 
-    if (SoundtrackManager::the().isTrackPlaying())
-        Util::renderOverlayString(("\5Now Playing:\1 " + SoundtrackManager::the().getTrackName()).c_str(), 16, g_viewportHeight - Util::k_consoleFontSize - 16);
-
     Util::consoleClear();
     updateFpsCounter();
 
@@ -258,12 +246,6 @@ static void onKeyboard(const int up, const unsigned char key, const int x, const
             g_isMSAAEnabled = !g_isMSAAEnabled;
         break;
     case Keymap::InputCommand::ToggleSoundtrack:
-        if (up) {
-            if (SoundtrackManager::the().isTrackPlaying())
-                SoundtrackManager::the().stopTrack();
-            else
-                SoundtrackManager::the().playNextTrack();
-        }
         break;
     default:
         g_scene.player->handleKeyboardEvent(up, key, x, y);
